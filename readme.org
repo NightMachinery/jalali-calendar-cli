@@ -1,7 +1,7 @@
 #+TITLE: jalali-calendar-cli
 
 * Install
-#+begin_example zsh
+#+begin_example bash
 pip install -U jalali-calendar-cli
 #+end_example
 
@@ -9,12 +9,7 @@ pip install -U jalali-calendar-cli
 #+ATTR_HTML: :width 800
 [[file:readme.org_imgs/20230524_003016_h5V1Xf.png]]
 
-#+begin_src bsh.dash :results verbatim :exports both :wrap results
-jcal --help
-#+end_src
-
-#+RESULTS:
-#+begin_results
+#+begin_example bash
 usage: jcal [-h] [--color {auto,always,never}]
             [--true-color | --no-true-color] [--footnotes | --no-footnotes]
             [--indentation INDENTATION]
@@ -37,7 +32,7 @@ options:
                         Number of spaces for indentation (default: 5)
   --holidays-json-path HOLIDAYS_JSON_PATH
                         Path to JSON file containing holiday data
-#+end_results
+#+end_example
 
 * Holidays Data
 The default data dictionary is [[https://github.com/NightMachinery/jalali-calendar-cli/blob/master/jalali_calendar_cli/holidays.json][here]]. I plan to keep the data up-to-date, but you can always supply your own.
