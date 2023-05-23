@@ -1,0 +1,6 @@
+#+TITLE: jalali-calendar-cli
+
+* Install
+#+begin_example zsh
+
+#+end_example

@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "jalali-calendar-cli"
+version = "0.1.0"
+description = ""
+authors = ["NightMachinery <feraidoonmehri@gmail.com>"]
+readme = "readme.org"
+packages = [{include = "jalali_calendar_cli"}]
+
+
+[tool.poetry.scripts]
+jcal = 'jalali_calendar_cli.jalali_calendar:main'
+jalali-calendar = 'jalali_calendar_cli.jalali_calendar:main'
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+jdatetime = "^4.1.1"
+colorama = "^0.4.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

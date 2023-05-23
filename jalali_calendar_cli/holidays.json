@@ -1,0 +1,193 @@
+{
+  "1402": [
+    {
+      "row": 1,
+      "dayOfWeek": "Wednesday",
+      "month": 1,
+      "day": 1,
+      "event": "Norooz Start"
+    },
+    {
+      "row": 2,
+      "dayOfWeek": "Thursday",
+      "month": 1,
+      "day": 2,
+      "event": "Norooz Holiday"
+    },
+    {
+      "row": 3,
+      "dayOfWeek": "Friday",
+      "month": 1,
+      "day": 3,
+      "event": "Norooz Holiday"
+    },
+    {
+      "row": 4,
+      "dayOfWeek": "Saturday",
+      "month": 1,
+      "day": 4,
+      "event": "Norooz Holiday"
+    },
+    {
+      "row": 5,
+      "dayOfWeek": "Sunday",
+      "month": 1,
+      "day": 12,
+      "event": "Islamic Republic Day"
+    },
+    {
+      "row": 6,
+      "dayOfWeek": "Monday",
+      "month": 1,
+      "day": 13,
+      "event": "Nature Day"
+    },
+    {
+      "row": 7,
+      "dayOfWeek": "Thursday",
+      "month": 1,
+      "day": 23,
+      "event": "Martyrdom of Imam Ali"
+    },
+    {
+      "row": 8,
+      "dayOfWeek": "Saturday",
+      "month": 2,
+      "day": 2,
+      "event": "Eid Fitr"
+    },
+    {
+      "row": 9,
+      "dayOfWeek": "Monday",
+      "month": 2,
+      "day": 3,
+      "event": "Eid Fitr Holiday"
+    },
+    {
+      "row": 10,
+      "dayOfWeek": "Wednesday",
+      "month": 2,
+      "day": 26,
+      "event": "Martyrdom of Imam Jafar Sadiq"
+    },
+    {
+      "row": 11,
+      "dayOfWeek": "Monday",
+      "month": 3,
+      "day": 14,
+      "event": "Demise of Imam Khomeini and Election of Imam Khamenei"
+    },
+    {
+      "row": 12,
+      "dayOfWeek": "Tuesday",
+      "month": 3,
+      "day": 15,
+      "event": "Revolt of Khordad 15"
+    },
+    {
+      "row": 13,
+      "dayOfWeek": "Friday",
+      "month": 4,
+      "day": 8,
+      "event": "Eid Qurban"
+    },
+    {
+      "row": 14,
+      "dayOfWeek": "Saturday",
+      "month": 4,
+      "day": 16,
+      "event": "Eid Ghadir"
+    },
+    {
+      "row": 15,
+      "dayOfWeek": "Friday",
+      "month": 5,
+      "day": 5,
+      "event": "Tasu'a"
+    },
+    {
+      "row": 16,
+      "dayOfWeek": "Saturday",
+      "month": 5,
+      "day": 6,
+      "event": "Ashura"
+    },
+    {
+      "row": 17,
+      "dayOfWeek": "Thursday",
+      "month": 6,
+      "day": 15,
+      "event": "Arba'een"
+    },
+    {
+      "row": 18,
+      "dayOfWeek": "Friday",
+      "month": 6,
+      "day": 23,
+      "event": "Demise of Prophet Muhammad and Martyrdom of Imam Hassan"
+    },
+    {
+      "row": 19,
+      "dayOfWeek": "Sunday",
+      "month": 6,
+      "day": 25,
+      "event": "Martyrdom of Imam Reza"
+    },
+    {
+      "row": 20,
+      "dayOfWeek": "Monday",
+      "month": 7,
+      "day": 2,
+      "event": "Martyrdom of Imam Hassan Askari and Start of Imamate of Imam Mahdi"
+    },
+    {
+      "row": 21,
+      "dayOfWeek": "Wednesday",
+      "month": 7,
+      "day": 11,
+      "event": "Birthday of Prophet Muhammad and Imam Sadiq"
+    },
+    {
+      "row": 22,
+      "dayOfWeek": "Monday",
+      "month": 9,
+      "day": 26,
+      "event": "Martyrdom of Fatima Zahra"
+    },
+    {
+      "row": 23,
+      "dayOfWeek": "Friday",
+      "month": 11,
+      "day": 5,
+      "event": "Birthday of Imam Ali"
+    },
+    {
+      "row": 24,
+      "dayOfWeek": "Friday",
+      "month": 11,
+      "day": 19,
+      "event": "Mab'ath"
+    },
+    {
+      "row": 25,
+      "dayOfWeek": "Monday",
+      "month": 11,
+      "day": 22,
+      "event": "Victory of the Islamic Revolution"
+    },
+    {
+      "row": 26,
+      "dayOfWeek": "Monday",
+      "month": 12,
+      "day": 6,
+      "event": "Birthday of Imam Mahdi"
+    },
+    {
+      "row": 27,
+      "dayOfWeek": "Wednesday",
+      "month": 12,
+      "day": 29,
+      "event": "Nationalization of the Oil Industry"
+    }
+  ]
+}
