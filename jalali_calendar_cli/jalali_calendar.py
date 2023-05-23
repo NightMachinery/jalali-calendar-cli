@@ -266,14 +266,14 @@ def main(args=None) -> None:
         type=int,
         nargs="?",
         default=now_jalali.month,
-        help="Month in Jalali calendar",
+        help="month in Jalali calendar (default: current month)",
     )
     parser.add_argument(
         "year",
         type=int,
         nargs="?",
         default=now_jalali.year,
-        help="Year in Jalali calendar",
+        help="year in Jalali calendar (default: current year)",
     )
     ##
     # parser.add_argument("month", type=int, help="Month in Jalali calendar")
@@ -284,14 +284,14 @@ def main(args=None) -> None:
         "--color",
         choices=["auto", "always", "never"],
         default="auto",
-        help="Colorize the output",
+        help="colorize the output",
     )
 
     # parser.add_argument(
     #     "--unicode",
     #     action=argparse.BooleanOptionalAction,
     #     default=True,
-    #     help="Enable Unicode superscript for footnote numbers",
+    #     help="enable Unicode superscript for footnote numbers",
     # )
 
     parser.add_argument(
@@ -299,25 +299,25 @@ def main(args=None) -> None:
         action=argparse.BooleanOptionalAction,
         # default=True,
         default=False,  #: to make the default compatible with dark themes
-        help="Enable true color support for output",
+        help="enable true color support for output",
     )
     parser.add_argument(
         "--footnotes",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="Show footnotes in the output",
+        help="show footnotes in the output",
     )
     parser.add_argument(
         "--indentation",
         type=int,
         default=5,
-        help="Number of spaces for indentation (default: 5)",
+        help="number of spaces for indentation (default: 5)",
     )
     parser.add_argument(
         "--holidays-json-path",
         type=str,
         default=default_holiday_data_json_path,
-        help="Path to JSON file containing holiday data",
+        help="path to JSON file containing holiday data",
     )
 
     args = parser.parse_args()

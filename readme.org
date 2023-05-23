@@ -17,21 +17,39 @@ usage: jcal [-h] [--color {auto,always,never}]
             [month] [year]
 
 positional arguments:
-  month                 Month in Jalali calendar
-  year                  Year in Jalali calendar
+  month                 month in Jalali calendar (default: current month)
+  year                  year in Jalali calendar (default: current year)
 
 options:
   -h, --help            show this help message and exit
   --color {auto,always,never}
-                        Colorize the output
+                        colorize the output
   --true-color, --no-true-color
-                        Enable true color support for output (default: False)
+                        enable true color support for output (default: False)
   --footnotes, --no-footnotes
-                        Show footnotes in the output (default: True)
+                        show footnotes in the output (default: True)
   --indentation INDENTATION
-                        Number of spaces for indentation (default: 5)
+                        number of spaces for indentation (default: 5)
   --holidays-json-path HOLIDAYS_JSON_PATH
-                        Path to JSON file containing holiday data
+                        path to JSON file containing holiday data
+#+end_example
+
+#+begin_example bash
+jcal 12
+#+end_example
+
+#+begin_example
+            1402 Esfand           
+ Sat  Sun  Mon  Tue  Wed  Thu  Fri
+                  1    2    3    4
+   5    6    7    8    9   10   11
+  12   13   14   15   16   17   18
+  19   20   21   22   23   24   25
+  26   27   28   29
+
+ Holidays:
+   6: Birthday of Imam Mahdi
+   29: Nationalization of the Oil Industry
 #+end_example
 
 * Holidays Data
