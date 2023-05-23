@@ -1,5 +1,7 @@
 #+TITLE: jalali-calendar-cli
 
+Jalali (Shamsi) calendar in your terminal, with holidays
+
 * Install
 #+begin_example bash
 pip install -U jalali-calendar-cli
