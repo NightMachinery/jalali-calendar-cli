@@ -355,58 +355,58 @@ def main(args=None) -> None:
         help="color preset for the calendar output (default: light)",
     )
 
-    true_color_group = parser.add_argument_group("24-bit True Color Options")
+    true_color_group = parser.add_argument_group("24-bit true color options")
     true_color_group.add_argument(
         "--weekend-true-color",
         type=str,
         default=None,
-        help="RGB values for weekend color in 24-bit True Color",
+        help="RGB values for weekend color in 24-bit true color",
     )
     true_color_group.add_argument(
         "--holiday-true-color",
         type=str,
         default=None,
-        help="RGB values for holiday color in 24-bit True Color",
+        help="RGB values for holiday color in 24-bit true color",
     )
     true_color_group.add_argument(
         "--footnote-true-color",
         type=str,
         default=None,
-        # help="RGB values for footnote color in 24-bit True Color",
+        # help="RGB values for footnote color in 24-bit true color",
         help=argparse.SUPPRESS,
     )
     true_color_group.add_argument(
         "--header-true-color",
         type=str,
         default=None,
-        help="RGB values for header color in 24-bit True Color",
+        help="RGB values for header color in 24-bit true color",
     )
 
-    colorama_color_group = parser.add_argument_group("Colorama 256 Color Options")
+    colorama_color_group = parser.add_argument_group("colorama 256 color options")
     colorama_color_group.add_argument(
         "--weekend-color",
         type=str,
         default=None,
-        help="Colorama color name for weekend color",
+        help="colorama color name for weekend color",
     )
     colorama_color_group.add_argument(
         "--holiday-color",
         type=str,
         default=None,
-        help="Colorama color name for holiday color",
+        help="colorama color name for holiday color",
     )
     colorama_color_group.add_argument(
         "--footnote-color",
         type=str,
         default=None,
-        # help="Colorama color name for footnote color",
+        # help="colorama color name for footnote color",
         help=argparse.SUPPRESS,
     )
     colorama_color_group.add_argument(
         "--header-color",
         type=str,
         default=None,
-        help="Colorama color name for header color",
+        help="colorama color name for header color",
     )
 
     args = parser.parse_args()

@@ -53,23 +53,24 @@ options:
   --color-preset COLOR_PRESET
                         color preset for the calendar output (default: light)
 
-24-bit True Color Options:
+24-bit true color options:
   --weekend-true-color WEEKEND_TRUE_COLOR
-                        RGB values for weekend color in 24-bit True Color
+                        RGB values for weekend color in 24-bit true color
   --holiday-true-color HOLIDAY_TRUE_COLOR
-                        RGB values for holiday color in 24-bit True Color
+                        RGB values for holiday color in 24-bit true color
   --header-true-color HEADER_TRUE_COLOR
-                        RGB values for header color in 24-bit True Color
+                        RGB values for header color in 24-bit true color
 
-Colorama 256 Color Options:
+colorama 256 color options:
   --weekend-color WEEKEND_COLOR
-                        Colorama color name for weekend color
+                        colorama color name for weekend color
   --holiday-color HOLIDAY_COLOR
-                        Colorama color name for holiday color
+                        colorama color name for holiday color
   --header-color HEADER_COLOR
-                        Colorama color name for header color
+                        colorama color name for header color
 #+end_example
 
+** Examples
 #+begin_example bash
 jcal 12
 #+end_example
@@ -112,7 +113,31 @@ jcal 7 1402
 #+ATTR_HTML: :width 968
 [[file:readme.org_imgs/20230606_103928_zRAerD.png]]
 
+** =colorama= Colors
+These colors are defined by your terminal theme. Use true (24-bit) colors if you want to specify colors in RGB.
+
+#+begin_example
+BLACK
+BLUE
+CYAN
+GREEN
+LIGHTBLACK_EX
+LIGHTBLUE_EX
+LIGHTCYAN_EX
+LIGHTGREEN_EX
+LIGHTMAGENTA_EX
+LIGHTRED_EX
+LIGHTWHITE_EX
+LIGHTYELLOW_EX
+MAGENTA
+RED
+RESET
+WHITE
+YELLOW
+#+end_example
+
 * Holiday Data
 The default data dictionary is [[https://github.com/NightMachinery/jalali-calendar-cli/blob/master/jalali_calendar_cli/holidays.json][here]]. I plan to keep the data up-to-date for the upcoming years, but you can always supply your own.
 
 The holiday data of previous years (≤1401) has not been added.
+
