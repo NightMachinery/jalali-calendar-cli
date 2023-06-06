@@ -1,8 +1,4 @@
 ##
-# * @todo
-# ** Make the true color customizable.
-# *** Add a preset color theme for dark themes
-##
 import pathlib
 from typing import List
 import sys
@@ -11,6 +7,7 @@ import datetime
 import json
 import os
 import argparse
+import colorama
 from colorama import Fore, Style, init
 
 try:
@@ -22,6 +19,23 @@ except ImportError:
 
 
 init(autoreset=False)
+
+
+# Color presets for different themes
+COLOR_PRESETS = {
+    "light": {
+        "weekend": {"name": "LIGHTMAGENTA_EX", "true": (85, 26, 139)},
+        "holiday": {"name": "LIGHTRED_EX", "true": (230, 69, 0)},
+        "footnote": {"name": "LIGHTBLACK_EX", "true": (170, 170, 170)},
+        "header": {"name": "BLACK", "true": (50, 50, 50)},
+    },
+    "dark": {
+        "weekend": {"name": "LIGHTMAGENTA_EX", "true": (255, 0, 255)},
+        "holiday": {"name": "LIGHTRED_EX", "true": (255, 0, 0)},
+        "footnote": {"name": "LIGHTBLACK_EX", "true": (128, 128, 128)},
+        "header": {"name": "WHITE", "true": (255, 255, 255)},
+    },
+}
 
 
 def jmonth_name(month: int) -> str:
@@ -104,6 +118,11 @@ def generate_calendar(
     color: bool = False,
     unicode_p: bool = True,
     true_color: bool = False,
+    color_preset: str = "light",
+    weekend_color=None,
+    holiday_color=None,
+    footnote_color=None,
+    header_color=None,
 ) -> List[str]:
     assert indentation >= 4
 
@@ -122,28 +141,28 @@ def generate_calendar(
     footnotes = []
     superscript_map = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 
-    blue_start = (
-        generate_true_color_code(85, 26, 139)
-        if true_color
-        else (Fore.BLUE if color else "")
-    )
-    red_start = (
-        generate_true_color_code(230, 69, 0)
-        if true_color
-        else (Fore.RED if color else "")
-    )
-    gray_start = (
-        generate_true_color_code(170, 170, 170)
-        if true_color
-        else (Fore.LIGHTBLACK_EX if color else "")
-    )
-    black_start = (
-        generate_true_color_code(50, 50, 50)
-        if true_color
-        else (Fore.WHITE if color else "")
-        #: White themes should have set WHITE to the color black, and dark themes to white.
-    )
-    bold_start = Style.BRIGHT if color else ""
+    # Get color preset
+    preset = COLOR_PRESETS[color_preset]
+
+    # Determine color options
+    weekend_color = weekend_color if weekend_color else preset["weekend"]
+    holiday_color = holiday_color if holiday_color else preset["holiday"]
+    footnote_color = footnote_color if footnote_color else preset["footnote"]
+    header_color = header_color if header_color else preset["header"]
+
+    # Determine color start values
+    if true_color:
+        weekend_color_ansi = generate_true_color_code(*weekend_color["true"])
+        holiday_color_ansi = generate_true_color_code(*holiday_color["true"])
+        footnote_color_ansi = generate_true_color_code(*footnote_color["true"])
+        header_color_ansi = generate_true_color_code(*header_color["true"])
+    else:
+        weekend_color_ansi = getattr(colorama.Fore, weekend_color["name"])
+        holiday_color_ansi = getattr(colorama.Fore, holiday_color["name"])
+        footnote_color_ansi = getattr(colorama.Fore, footnote_color["name"])
+        header_color_ansi = getattr(colorama.Fore, header_color["name"])
+
+    bold_ansi = Style.BRIGHT if color else ""
     reset_color = Style.RESET_ALL if color else ""
 
     last_indentation_debt = header_indentation_len
@@ -170,12 +189,12 @@ def generate_calendar(
             else:
                 footnote_num_str = ""
 
-            day_str = f"{bold_start}{red_start}{day_str}{reset_color}"
+            day_str = f"{bold_ansi}{holiday_color_ansi}{day_str}{reset_color}"
             if footnote_num_str:
-                day_str += f"{gray_start}{footnote_num_str}{reset_color}"
+                day_str += f"{footnote_color_ansi}{footnote_num_str}{reset_color}"
 
         elif weekday == 0:
-            day_str = f"{blue_start}{day_str}{reset_color}"
+            day_str = f"{weekend_color_ansi}{day_str}{reset_color}"
 
         # ic(indentation, day_str, day_str.rjust(indentation))
         calendar.append(day_str)
@@ -188,8 +207,8 @@ def generate_calendar(
 
     headers = ""
     year_month_str = f"{year} {jmonth_name(month)}"
-    headers += f"{bold_start}{black_start}{center_justify(year_month_str, len(headers_weekdays))}{reset_color}\n"
-    headers += f"{bold_start}{headers_weekdays}{reset_color}"
+    headers += f"{bold_ansi}{header_color_ansi}{center_justify(year_month_str, len(headers_weekdays))}{reset_color}\n"
+    headers += f"{bold_ansi}{headers_weekdays}{reset_color}"
 
     return f"{headers}\n{''.join(calendar)}", "\n".join(footnotes)
 
@@ -217,6 +236,11 @@ def jalali_calendar(
     true_color: bool,
     holidays_data,
     footnotes_p: bool = True,
+    color_preset: str = "light",
+    weekend_color=None,
+    holiday_color=None,
+    footnote_color=None,
+    header_color=None,
 ) -> None:
     j_date = jdatetime.date(year, month, 1)
     first_day_of_month = j_date.weekday()
@@ -232,6 +256,11 @@ def jalali_calendar(
         color=color,
         unicode_p=unicode_p,
         true_color=true_color,
+        color_preset=color_preset,
+        weekend_color=weekend_color,
+        holiday_color=holiday_color,
+        footnote_color=footnote_color,
+        header_color=header_color,
     )
     line_indent = " "
     calendar = prefix_lines(calendar, prefix=line_indent)
@@ -248,9 +277,8 @@ def main(args=None) -> None:
     if args is None:
         args = sys.argv
 
-    default_holiday_data_json_path = (
-        os.getenv("JALALI_HOLIDAYS_JSON_PATH")
-        or str(pathlib.Path(__file__).parent / "holidays.json")
+    default_holiday_data_json_path = os.getenv("JALALI_HOLIDAYS_JSON_PATH") or str(
+        pathlib.Path(__file__).parent / "holidays.json"
     )
     # ic(default_holiday_data_json_path)
 
@@ -320,9 +348,92 @@ def main(args=None) -> None:
         help="path to JSON file containing holiday data",
     )
 
+    parser.add_argument(
+        "--color-preset",
+        type=str,
+        default="light",
+        help="color preset for the calendar output (default: light)",
+    )
+
+    true_color_group = parser.add_argument_group("24-bit True Color Options")
+    true_color_group.add_argument(
+        "--weekend-true-color",
+        type=str,
+        default=None,
+        help="RGB values for weekend color in 24-bit True Color",
+    )
+    true_color_group.add_argument(
+        "--holiday-true-color",
+        type=str,
+        default=None,
+        help="RGB values for holiday color in 24-bit True Color",
+    )
+    true_color_group.add_argument(
+        "--footnote-true-color",
+        type=str,
+        default=None,
+        # help="RGB values for footnote color in 24-bit True Color",
+        help=argparse.SUPPRESS,
+    )
+    true_color_group.add_argument(
+        "--header-true-color",
+        type=str,
+        default=None,
+        help="RGB values for header color in 24-bit True Color",
+    )
+
+    colorama_color_group = parser.add_argument_group("Colorama 256 Color Options")
+    colorama_color_group.add_argument(
+        "--weekend-color",
+        type=str,
+        default=None,
+        help="Colorama color name for weekend color",
+    )
+    colorama_color_group.add_argument(
+        "--holiday-color",
+        type=str,
+        default=None,
+        help="Colorama color name for holiday color",
+    )
+    colorama_color_group.add_argument(
+        "--footnote-color",
+        type=str,
+        default=None,
+        # help="Colorama color name for footnote color",
+        help=argparse.SUPPRESS,
+    )
+    colorama_color_group.add_argument(
+        "--header-color",
+        type=str,
+        default=None,
+        help="Colorama color name for header color",
+    )
+
     args = parser.parse_args()
 
     color = args.color == "always" or (args.color == "auto" and sys.stdout.isatty())
+
+    colors = dict()
+    color_keys = ["weekend", "holiday", "footnote", "header"]
+    if args.true_color:
+        for color_key in color_keys:
+            color_arg = getattr(args, f"{color_key}_true_color", None)
+            if color_arg:
+                if color_key not in colors:
+                    colors[color_key] = dict()
+                colors[color_key]["true"] = tuple(map(int, color_arg.split(",")))
+    else:
+        for color_key in color_keys:
+            color_arg = getattr(args, f"{color_key}_color", None)
+            if color_arg:
+                if color_key not in colors:
+                    colors[color_key] = dict()
+                colors[color_key]["name"] = color_arg.upper()
+
+    weekend_color = colors.get("weekend", None)
+    holiday_color = colors.get("holiday", None)
+    footnote_color = colors.get("footnote", None)
+    header_color = colors.get("header", None)
 
     unicode_p = True
     # unicode_p = args.unicode
@@ -337,8 +448,13 @@ def main(args=None) -> None:
         unicode_p,
         args.indentation,
         args.true_color,
-        footnotes_p=args.footnotes,
         holidays_data=holidays_data,
+        footnotes_p=args.footnotes,
+        color_preset=args.color_preset,
+        weekend_color=weekend_color,
+        holiday_color=holiday_color,
+        footnote_color=footnote_color,
+        header_color=header_color,
     )
 
 
