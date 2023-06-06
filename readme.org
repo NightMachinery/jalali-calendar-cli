@@ -10,10 +10,14 @@ pip install -U jalali-calendar-cli
 This requires Python ≥3.10.
 
 * Usage
-#+ATTR_HTML: :width 884
-[[file:readme.org_imgs/20230524_003016_h5V1Xf.png]]
-#+ATTR_HTML: :width 968
-[[file:readme.org_imgs/20230606_103928_zRAerD.png]]
+# #+ATTR_HTML: :width 884
+# [[file:readme.org_imgs/20230524_003016_h5V1Xf.png]]
+#+ATTR_HTML: :width 914
+[[file:readme.org_imgs/20230606_125421_Bh79HZ.png]]
+
+#+ATTR_HTML: :width 900
+[[file:readme.org_imgs/20230606_125356_jLt2Jh.png]]
+
 
 #+begin_example bash
 usage: jalali-calendar [-h] [--color {auto,always,never}]
@@ -101,6 +105,12 @@ jcal 7 1402
     2: Martyrdom of Imam Hassan Askari and Start of Imamate of Imam Mahdi
    11: Birthday of Prophet Muhammad and Imam Sadiq
 #+end_example
+
+#+ATTR_HTML: :width 968
+[[file:readme.org_imgs/20230606_125617_sazNzJ.png]]
+
+#+ATTR_HTML: :width 968
+[[file:readme.org_imgs/20230606_103928_zRAerD.png]]
 
 * Holidays Data
 The default data dictionary is [[https://github.com/NightMachinery/jalali-calendar-cli/blob/master/jalali_calendar_cli/holidays.json][here]]. I plan to keep the data up-to-date for the upcoming years, but you can always supply your own.
