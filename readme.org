@@ -7,6 +7,8 @@ Jalali (Shamsi) calendar in your terminal, with holidays
 pip install -U jalali-calendar-cli
 #+end_example
 
+This requires Python ≥3.10.
+
 * Usage
 #+ATTR_HTML: :width 884
 [[file:readme.org_imgs/20230524_003016_h5V1Xf.png]]
