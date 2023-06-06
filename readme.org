@@ -78,10 +78,29 @@ jcal 12
   26   27   28   29
 
  Holidays:
-   6: Birthday of Imam Mahdi
+    6: Birthday of Imam Mahdi
    29: Nationalization of the Oil Industry
 #+end_example
 
-* Holidays Data
-The default data dictionary is [[https://github.com/NightMachinery/jalali-calendar-cli/blob/master/jalali_calendar_cli/holidays.json][here]]. I plan to keep the data up-to-date, but you can always supply your own.
+#+begin_example bash
+jcal 7 1402
+#+end_example
 
+#+begin_example
+             1402 Mehr            
+ Sat  Sun  Mon  Tue  Wed  Thu  Fri
+   1    2    3    4    5    6    7
+   8    9   10   11   12   13   14
+  15   16   17   18   19   20   21
+  22   23   24   25   26   27   28
+  29   30
+
+ Holidays:
+    2: Martyrdom of Imam Hassan Askari and Start of Imamate of Imam Mahdi
+   11: Birthday of Prophet Muhammad and Imam Sadiq
+#+end_example
+
+* Holidays Data
+The default data dictionary is [[https://github.com/NightMachinery/jalali-calendar-cli/blob/master/jalali_calendar_cli/holidays.json][here]]. I plan to keep the data up-to-date for the upcoming years, but you can always supply your own.
+
+The holiday data of previous years (≤1401) has not been added.

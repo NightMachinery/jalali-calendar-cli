@@ -173,12 +173,12 @@ def generate_calendar(
         last_indentation_debt = 0
 
         if day in holidays:
-            footnotes.append(f"{day}: {holidays[day]}")
+            footnotes.append(f"{day:2d}: {holidays[day]}")
 
             if (
                 False
             ):  #: @cruft no need to use footnotes when the days can act as indices already
-                footnotes.append(f"{len(footnotes)+1}: {holidays[day]}")
+                footnotes.append(f"{len(footnotes)+1:2d}: {holidays[day]}")
                 footnote_num_str = str(len(footnotes))
                 if unicode_p:
                     footnote_num_str = footnote_num_str.translate(superscript_map)
