@@ -112,7 +112,7 @@ jcal 7 1402
 #+ATTR_HTML: :width 968
 [[file:readme.org_imgs/20230606_103928_zRAerD.png]]
 
-* Holidays Data
+* Holiday Data
 The default data dictionary is [[https://github.com/NightMachinery/jalali-calendar-cli/blob/master/jalali_calendar_cli/holidays.json][here]]. I plan to keep the data up-to-date for the upcoming years, but you can always supply your own.
 
 The holiday data of previous years (≤1401) has not been added.
