@@ -25,7 +25,7 @@ usage: jalali-calendar [-h] [--color {auto,always,never}]
                        [--footnotes | --no-footnotes]
                        [--indentation INDENTATION]
                        [--holidays-json-path HOLIDAYS_JSON_PATH]
-                       [--color-preset COLOR_PRESET]
+                       [--color-preset {light,dark}]
                        [--weekend-true-color WEEKEND_TRUE_COLOR]
                        [--holiday-true-color HOLIDAY_TRUE_COLOR]
                        [--header-true-color HEADER_TRUE_COLOR]
@@ -50,7 +50,7 @@ options:
                         number of spaces for indentation (default: 5)
   --holidays-json-path HOLIDAYS_JSON_PATH
                         path to JSON file containing holiday data
-  --color-preset COLOR_PRESET
+  --color-preset {light,dark}
                         color preset for the calendar output (default: light)
 
 24-bit true color options:

@@ -350,7 +350,7 @@ def main(args=None) -> None:
 
     parser.add_argument(
         "--color-preset",
-        type=str,
+        choices=["light", "dark",],
         default="light",
         help="color preset for the calendar output (default: light)",
     )
