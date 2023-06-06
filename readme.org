@@ -113,6 +113,15 @@ jcal 7 1402
 #+ATTR_HTML: :width 968
 [[file:readme.org_imgs/20230606_103928_zRAerD.png]]
 
+*** Shell Aliases in Bash
+You can add aliases to =~/.bashrc= and =~/.bash_profile= to persist your settings:
+
+#+begin_example bash
+alias jcal='command jcal --color-preset dark'
+#+end_example
+
+Aliases work the same way in Zsh, you just need to add them to =~/.zshenv=.
+
 ** =colorama= Colors
 These colors are defined by your terminal theme. Use true (24-bit) colors if you want to specify colors in RGB.
 
