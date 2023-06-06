@@ -14,11 +14,19 @@ pip install -U jalali-calendar-cli
 [[file:readme.org_imgs/20230606_103928_zRAerD.png]]
 
 #+begin_example bash
-usage: jcal [-h] [--color {auto,always,never}]
-            [--true-color | --no-true-color] [--footnotes | --no-footnotes]
-            [--indentation INDENTATION]
-            [--holidays-json-path HOLIDAYS_JSON_PATH]
-            [month] [year]
+usage: jalali-calendar [-h] [--color {auto,always,never}]
+                       [--true-color | --no-true-color]
+                       [--footnotes | --no-footnotes]
+                       [--indentation INDENTATION]
+                       [--holidays-json-path HOLIDAYS_JSON_PATH]
+                       [--color-preset COLOR_PRESET]
+                       [--weekend-true-color WEEKEND_TRUE_COLOR]
+                       [--holiday-true-color HOLIDAY_TRUE_COLOR]
+                       [--header-true-color HEADER_TRUE_COLOR]
+                       [--weekend-color WEEKEND_COLOR]
+                       [--holiday-color HOLIDAY_COLOR]
+                       [--header-color HEADER_COLOR]
+                       [month] [year]
 
 positional arguments:
   month                 month in Jalali calendar (default: current month)
@@ -36,6 +44,24 @@ options:
                         number of spaces for indentation (default: 5)
   --holidays-json-path HOLIDAYS_JSON_PATH
                         path to JSON file containing holiday data
+  --color-preset COLOR_PRESET
+                        color preset for the calendar output (default: light)
+
+24-bit True Color Options:
+  --weekend-true-color WEEKEND_TRUE_COLOR
+                        RGB values for weekend color in 24-bit True Color
+  --holiday-true-color HOLIDAY_TRUE_COLOR
+                        RGB values for holiday color in 24-bit True Color
+  --header-true-color HEADER_TRUE_COLOR
+                        RGB values for header color in 24-bit True Color
+
+Colorama 256 Color Options:
+  --weekend-color WEEKEND_COLOR
+                        Colorama color name for weekend color
+  --holiday-color HOLIDAY_COLOR
+                        Colorama color name for holiday color
+  --header-color HEADER_COLOR
+                        Colorama color name for header color
 #+end_example
 
 #+begin_example bash
