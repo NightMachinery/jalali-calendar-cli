@@ -29,9 +29,11 @@ usage: jalali-calendar [-h] [--color {auto,always,never}]
                        [--weekend-true-color WEEKEND_TRUE_COLOR]
                        [--holiday-true-color HOLIDAY_TRUE_COLOR]
                        [--header-true-color HEADER_TRUE_COLOR]
+                       [--today-true-color TODAY_TRUE_COLOR]
                        [--weekend-color WEEKEND_COLOR]
                        [--holiday-color HOLIDAY_COLOR]
                        [--header-color HEADER_COLOR]
+                       [--today-color TODAY_COLOR]
                        [month] [year]
 
 positional arguments:
@@ -60,6 +62,8 @@ options:
                         RGB values for holiday color in 24-bit true color
   --header-true-color HEADER_TRUE_COLOR
                         RGB values for header color in 24-bit true color
+  --today-true-color TODAY_TRUE_COLOR
+                        RGB values for the current day's color
 
 colorama 256 color options:
   --weekend-color WEEKEND_COLOR
@@ -68,6 +72,8 @@ colorama 256 color options:
                         colorama color name for holiday color
   --header-color HEADER_COLOR
                         colorama color name for header color
+  --today-color TODAY_COLOR
+                        colorama color name for the current day
 #+end_example
 
 ** Examples
@@ -121,6 +127,11 @@ alias jcal='command jcal --color-preset dark'
 #+end_example
 
 Aliases work the same way in Zsh, you just need to add them to =~/.zshenv=.
+
+*** Today
+The current day is highlighted:
+#+ATTR_HTML: :width 874
+[[file:readme.org_imgs/20230630_060229_Temg6y.png]]
 
 *** Seeing All Months Together
 There is a Perl script included in this repository that prints all months together. This script is a WIP.

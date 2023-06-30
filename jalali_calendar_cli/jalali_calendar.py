@@ -415,10 +415,10 @@ def main(args=None) -> None:
         help="RGB values for header color in 24-bit true color",
     )
     true_color_group.add_argument(
-        "--color-today",
+        "--today-true-color",
         type=str,
         default=None,
-        help="RGB values for today color in 24-bit true color",
+        help="RGB values for the current day's color",
     )
 
     colorama_color_group = parser.add_argument_group("colorama 256 color options")
@@ -451,7 +451,7 @@ def main(args=None) -> None:
         "--today-color",
         type=str,
         default=None,
-        help="colorama color name for today color",
+        help="colorama color name for the current day",
     )
 
     args = parser.parse_args()
