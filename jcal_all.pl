@@ -42,7 +42,7 @@ for my $quarter (0..3) {
         $month = $month + 1;
 
         push @threads, threads->create(sub {
-            my $calendar = `jcal --indentation=$indent --color=$color --no-footnotes $month $year`;
+            my $calendar = `jcal --indentation=$indent --color=$color --no-footnotes --true-color $month $year`;
             chomp $calendar;
 
             my @lines = split /\n/, $calendar;
