@@ -18,7 +18,8 @@ except ImportError:
     ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)
 
 
-init(autoreset=False)
+# init(autoreset=False)
+#: This actually causes 'print' to be monkey-patched to not print ANSI codes when piping.
 
 
 # Color presets for different themes
@@ -124,7 +125,9 @@ def generate_calendar(
     footnote_color=None,
     header_color=None,
 ) -> List[str]:
-    assert indentation >= 4
+    assert indentation >= 3
+
+    # ic(color)
 
     weekdays = [
         "Sat",
@@ -150,8 +153,12 @@ def generate_calendar(
     footnote_color = footnote_color if footnote_color else preset["footnote"]
     header_color = header_color if header_color else preset["header"]
 
-    # Determine color start values
-    if true_color:
+    if not color:
+        weekend_color_ansi = ""
+        holiday_color_ansi = ""
+        footnote_color_ansi = ""
+        header_color_ansi = ""
+    elif true_color:
         weekend_color_ansi = generate_true_color_code(*weekend_color["true"])
         holiday_color_ansi = generate_true_color_code(*holiday_color["true"])
         footnote_color_ansi = generate_true_color_code(*footnote_color["true"])
@@ -411,7 +418,7 @@ def main(args=None) -> None:
 
     args = parser.parse_args()
 
-    color = args.color == "always" or (args.color == "auto" and sys.stdout.isatty())
+    color = (args.color == "always") or (args.color == "auto" and sys.stdout.isatty())
 
     colors = dict()
     color_keys = ["weekend", "holiday", "footnote", "header"]
