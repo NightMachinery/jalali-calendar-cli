@@ -29,12 +29,14 @@ COLOR_PRESETS = {
         "holiday": {"name": "LIGHTRED_EX", "true": (230, 69, 0)},
         "footnote": {"name": "LIGHTBLACK_EX", "true": (170, 170, 170)},
         "header": {"name": "BLACK", "true": (50, 50, 50)},
+        "today": {"name": "CYAN", "true": (0, 100, 100)},
     },
     "dark": {
         "weekend": {"name": "LIGHTMAGENTA_EX", "true": (255, 0, 255)},
         "holiday": {"name": "LIGHTRED_EX", "true": (255, 0, 0)},
         "footnote": {"name": "LIGHTBLACK_EX", "true": (128, 128, 128)},
         "header": {"name": "WHITE", "true": (255, 255, 255)},
+        "today": {"name": "CYAN", "true": (0, 100, 100)},
     },
 }
 
@@ -110,6 +112,7 @@ def get_jalali_days(year: int, month: int) -> int:
 
 
 def generate_calendar(
+    today: datetime,
     year: int,
     month: int,
     first_day_of_month: int,
@@ -124,6 +127,7 @@ def generate_calendar(
     holiday_color=None,
     footnote_color=None,
     header_color=None,
+    today_color=None,
 ) -> List[str]:
     assert indentation >= 3
 
@@ -152,6 +156,7 @@ def generate_calendar(
     holiday_color = holiday_color if holiday_color else preset["holiday"]
     footnote_color = footnote_color if footnote_color else preset["footnote"]
     header_color = header_color if header_color else preset["header"]
+    today_color = today_color if today_color else preset["today"]
 
     if not color:
         weekend_color_ansi = ""
@@ -163,11 +168,13 @@ def generate_calendar(
         holiday_color_ansi = generate_true_color_code(*holiday_color["true"])
         footnote_color_ansi = generate_true_color_code(*footnote_color["true"])
         header_color_ansi = generate_true_color_code(*header_color["true"])
+        today_color_ansi = generate_true_color_code(*today_color["true"])
     else:
         weekend_color_ansi = getattr(colorama.Fore, weekend_color["name"])
         holiday_color_ansi = getattr(colorama.Fore, holiday_color["name"])
         footnote_color_ansi = getattr(colorama.Fore, footnote_color["name"])
         header_color_ansi = getattr(colorama.Fore, header_color["name"])
+        today_color_ansi = getattr(colorama.Fore, today_color["name"])
 
     bold_ansi = Style.BRIGHT if color else ""
     reset_color = Style.RESET_ALL if color else ""
@@ -178,8 +185,9 @@ def generate_calendar(
         day_str = str(day)
         day_str = day_str.rjust(indentation - last_indentation_debt)
         last_indentation_debt = 0
-
-        if day in holidays:
+        if today.date().year == year and today.date().month == month and today.date().day == day:
+            day_str = f"{bold_ansi}{today_color_ansi}{day_str}{reset_color}"
+        elif day in holidays:
             footnotes.append(f"{day:2d}: {holidays[day]}")
 
             if (
@@ -235,6 +243,7 @@ def load_holidays(holidays_data, year: int, month: int) -> dict:
 
 
 def jalali_calendar(
+    today: datetime,
     year: int,
     month: int,
     color: bool,
@@ -248,12 +257,14 @@ def jalali_calendar(
     holiday_color=None,
     footnote_color=None,
     header_color=None,
+    today_color=None,
 ) -> None:
     j_date = jdatetime.date(year, month, 1)
     first_day_of_month = j_date.weekday()
     num_days = get_jalali_days(year, month)
     holidays = load_holidays(holidays_data, year, month)
     calendar, footnotes = generate_calendar(
+        today,
         year,
         month,
         first_day_of_month,
@@ -388,6 +399,12 @@ def main(args=None) -> None:
         default=None,
         help="RGB values for header color in 24-bit true color",
     )
+    true_color_group.add_argument(
+        "--color-today",
+        type=str,
+        default=None,
+        help="RGB values for today color in 24-bit true color",
+    )
 
     colorama_color_group = parser.add_argument_group("colorama 256 color options")
     colorama_color_group.add_argument(
@@ -415,13 +432,19 @@ def main(args=None) -> None:
         default=None,
         help="colorama color name for header color",
     )
+    colorama_color_group.add_argument(
+        "--today-color",
+        type=str,
+        default=None,
+        help="colorama color name for today color",
+    )
 
     args = parser.parse_args()
 
     color = (args.color == "always") or (args.color == "auto" and sys.stdout.isatty())
 
     colors = dict()
-    color_keys = ["weekend", "holiday", "footnote", "header"]
+    color_keys = ["weekend", "holiday", "footnote", "header", "today"]
     if args.true_color:
         for color_key in color_keys:
             color_arg = getattr(args, f"{color_key}_true_color", None)
@@ -441,6 +464,7 @@ def main(args=None) -> None:
     holiday_color = colors.get("holiday", None)
     footnote_color = colors.get("footnote", None)
     header_color = colors.get("header", None)
+    today_color= colors.get("today", None)
 
     unicode_p = True
     # unicode_p = args.unicode
@@ -449,6 +473,7 @@ def main(args=None) -> None:
         holidays_data = json.load(f)
 
     jalali_calendar(
+        now_jalali,
         args.year,
         args.month,
         color,
@@ -462,6 +487,7 @@ def main(args=None) -> None:
         holiday_color=holiday_color,
         footnote_color=footnote_color,
         header_color=header_color,
+        today_color=today_color,
     )
 
 
