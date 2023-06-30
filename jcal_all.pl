@@ -16,13 +16,15 @@ my $year = shift || die "Please specify a Jalali year as argument.\n";
 my $color;
 my $indent;
 my $indent_outer;
+my $indent_horizontal;
 
-GetOptions("c|color=s" => \$color, "i|indentation=s" => \$indent, "o|outer-indent=s" => \$indent_outer) or die "Error in command line arguments";
+GetOptions("c|color=s" => \$color, "i|indentation=s" => \$indent, "o|outer-indent=s" => \$indent_outer, "h|horizontal-indent=s" => \$indent_horizontal) or die "Error in command line arguments";
 
 #: default values for the options
 $color //= -t STDOUT ? "always" : "never";
 $indent //= 4;
 $indent_outer //= 0;
+$indent_horizontal //= 0;
 ##
 
 sub strip_ansi {
@@ -61,7 +63,9 @@ for my $quarter (0..3) {
 }
 
 # Collect the results
-for my $quarter_threads (@all_threads) {
+for my $quarter (0 .. $#all_threads) {
+    my $quarter_threads = $all_threads[$quarter];
+
     my @calendars = ();
     my $max_length = 0;
 
@@ -81,4 +85,7 @@ for my $quarter_threads (@all_threads) {
     for my $i (0..$max_len) {
         print join((' ' x $indent_outer), map { defined $_->[$i] ? sprintf("%-${max_length}s", $_->[$i]) : (' ' x $max_length) } @calendars), "\n";
     }
+
+    # Print a newline between quarters
+    print("\n" x $indent_horizontal) if $quarter < 3;
 }

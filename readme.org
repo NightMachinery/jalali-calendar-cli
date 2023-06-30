@@ -126,40 +126,43 @@ Aliases work the same way in Zsh, you just need to add them to =~/.zshenv=.
 There is a Perl script included in this repository that prints all months together. This script is a WIP.
 
 #+begin_example zsh
-perl ./jcal_all.pl 1402 --outer-indent 3
+perl ./jcal_all.pl 1402 --outer-indent 2 --horizontal-indent 1
 #+end_example
 
 #+begin_example
-       1402 Farvardin                1402 Ordibehesht                 1402 Khordad        
- Sat Sun Mon Tue Wed Thu Fri    Sat Sun Mon Tue Wed Thu Fri    Sat Sun Mon Tue Wed Thu Fri
-               1   2   3   4                              1              1   2   3   4   5
-   5   6   7   8   9  10  11      2   3   4   5   6   7   8      6   7   8   9  10  11  12
-  12  13  14  15  16  17  18      9  10  11  12  13  14  15     13  14  15  16  17  18  19
-  19  20  21  22  23  24  25     16  17  18  19  20  21  22     20  21  22  23  24  25  26
-  26  27  28  29  30  31         23  24  25  26  27  28  29     27  28  29  30  31        
-                                 30  31                                                   
-          1402 Tir                      1402 Mordad                  1402 Shahrivar       
- Sat Sun Mon Tue Wed Thu Fri    Sat Sun Mon Tue Wed Thu Fri    Sat Sun Mon Tue Wed Thu Fri
-                       1   2          1   2   3   4   5   6                      1   2   3
-   3   4   5   6   7   8   9      7   8   9  10  11  12  13      4   5   6   7   8   9  10
-  10  11  12  13  14  15  16     14  15  16  17  18  19  20     11  12  13  14  15  16  17
-  17  18  19  20  21  22  23     21  22  23  24  25  26  27     18  19  20  21  22  23  24
-  24  25  26  27  28  29  30     28  29  30  31                 25  26  27  28  29  30  31
-  31                                                                                      
-          1402 Mehr                      1402 Aban                      1402 Azar         
- Sat Sun Mon Tue Wed Thu Fri    Sat Sun Mon Tue Wed Thu Fri    Sat Sun Mon Tue Wed Thu Fri
-   1   2   3   4   5   6   7              1   2   3   4   5                      1   2   3
-   8   9  10  11  12  13  14      6   7   8   9  10  11  12      4   5   6   7   8   9  10
-  15  16  17  18  19  20  21     13  14  15  16  17  18  19     11  12  13  14  15  16  17
-  22  23  24  25  26  27  28     20  21  22  23  24  25  26     18  19  20  21  22  23  24
-  29  30                         27  28  29  30                 25  26  27  28  29  30    
-          1402 Dey                      1402 Bahman                    1402 Esfand        
- Sat Sun Mon Tue Wed Thu Fri    Sat Sun Mon Tue Wed Thu Fri    Sat Sun Mon Tue Wed Thu Fri
-                           1          1   2   3   4   5   6                  1   2   3   4
-   2   3   4   5   6   7   8      7   8   9  10  11  12  13      5   6   7   8   9  10  11
-   9  10  11  12  13  14  15     14  15  16  17  18  19  20     12  13  14  15  16  17  18
-  16  17  18  19  20  21  22     21  22  23  24  25  26  27     19  20  21  22  23  24  25
-  23  24  25  26  27  28  29     28  29  30                     26  27  28  29            
+       1402 Farvardin               1402 Ordibehesht                1402 Khordad        
+ Sat Sun Mon Tue Wed Thu Fri   Sat Sun Mon Tue Wed Thu Fri   Sat Sun Mon Tue Wed Thu Fri
+               1   2   3   4                             1             1   2   3   4   5
+   5   6   7   8   9  10  11     2   3   4   5   6   7   8     6   7   8   9  10  11  12
+  12  13  14  15  16  17  18     9  10  11  12  13  14  15    13  14  15  16  17  18  19
+  19  20  21  22  23  24  25    16  17  18  19  20  21  22    20  21  22  23  24  25  26
+  26  27  28  29  30  31        23  24  25  26  27  28  29    27  28  29  30  31        
+                                30  31                                                  
+
+          1402 Tir                     1402 Mordad                 1402 Shahrivar       
+ Sat Sun Mon Tue Wed Thu Fri   Sat Sun Mon Tue Wed Thu Fri   Sat Sun Mon Tue Wed Thu Fri
+                       1   2         1   2   3   4   5   6                     1   2   3
+   3   4   5   6   7   8   9     7   8   9  10  11  12  13     4   5   6   7   8   9  10
+  10  11  12  13  14  15  16    14  15  16  17  18  19  20    11  12  13  14  15  16  17
+  17  18  19  20  21  22  23    21  22  23  24  25  26  27    18  19  20  21  22  23  24
+  24  25  26  27  28  29  30    28  29  30  31                25  26  27  28  29  30  31
+  31                                                                                    
+
+          1402 Mehr                     1402 Aban                     1402 Azar         
+ Sat Sun Mon Tue Wed Thu Fri   Sat Sun Mon Tue Wed Thu Fri   Sat Sun Mon Tue Wed Thu Fri
+   1   2   3   4   5   6   7             1   2   3   4   5                     1   2   3
+   8   9  10  11  12  13  14     6   7   8   9  10  11  12     4   5   6   7   8   9  10
+  15  16  17  18  19  20  21    13  14  15  16  17  18  19    11  12  13  14  15  16  17
+  22  23  24  25  26  27  28    20  21  22  23  24  25  26    18  19  20  21  22  23  24
+  29  30                        27  28  29  30                25  26  27  28  29  30    
+
+          1402 Dey                     1402 Bahman                   1402 Esfand        
+ Sat Sun Mon Tue Wed Thu Fri   Sat Sun Mon Tue Wed Thu Fri   Sat Sun Mon Tue Wed Thu Fri
+                           1         1   2   3   4   5   6                 1   2   3   4
+   2   3   4   5   6   7   8     7   8   9  10  11  12  13     5   6   7   8   9  10  11
+   9  10  11  12  13  14  15    14  15  16  17  18  19  20    12  13  14  15  16  17  18
+  16  17  18  19  20  21  22    21  22  23  24  25  26  27    19  20  21  22  23  24  25
+  23  24  25  26  27  28  29    28  29  30                    26  27  28  29            
   30
 #+end_example
 
