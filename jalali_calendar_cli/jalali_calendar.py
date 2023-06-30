@@ -29,14 +29,18 @@ COLOR_PRESETS = {
         "holiday": {"name": "LIGHTRED_EX", "true": (230, 69, 0)},
         "footnote": {"name": "LIGHTBLACK_EX", "true": (170, 170, 170)},
         "header": {"name": "BLACK", "true": (50, 50, 50)},
-        "today": {"name": "CYAN", "true": (0, 100, 100)},
+        # "today": {"name": "CYAN", "true": (50, 230, 230)},
+        "today": {"name": "CYAN", "true": (255, 255, 255)},
     },
     "dark": {
         "weekend": {"name": "LIGHTMAGENTA_EX", "true": (255, 0, 255)},
         "holiday": {"name": "LIGHTRED_EX", "true": (255, 0, 0)},
         "footnote": {"name": "LIGHTBLACK_EX", "true": (128, 128, 128)},
         "header": {"name": "WHITE", "true": (255, 255, 255)},
-        "today": {"name": "CYAN", "true": (0, 100, 100)},
+
+        # "today": {"name": "CYAN", "true": (30, 200, 200)},
+        "today": {"name": "CYAN", "true": (255, 120, 0)},
+        # "today": {"name": "WHITE", "true": (255, 255, 255)},
     },
 }
 
@@ -81,7 +85,7 @@ def prefix_lines(text, prefix=""):
     return "\n".join(prefixed_lines)  # Join lines back into text with prefixed lines
 
 
-def generate_true_color_code(red: int, green: int, blue: int) -> str:
+def generate_true_color_code(red: int, green: int, blue: int, back=False) -> str:
     """
     Generates ANSI escape code for 24-bit true colors.
 
@@ -95,8 +99,13 @@ def generate_true_color_code(red: int, green: int, blue: int) -> str:
 
     """
 
-    # ANSI escape code format: \x1b[38;2;<r>;<g>;<b>m
-    escape_code = f"\x1b[38;2;{red};{green};{blue}m"
+    if back:
+        code = 48
+    else:
+        code = 38
+
+    #: @seeAlso `wh colorfg colorbg`
+    escape_code = f"\x1b[{code};2;{red};{green};{blue}m"
     return escape_code
 
 
@@ -163,18 +172,19 @@ def generate_calendar(
         holiday_color_ansi = ""
         footnote_color_ansi = ""
         header_color_ansi = ""
+        today_color_ansi = ""
     elif true_color:
         weekend_color_ansi = generate_true_color_code(*weekend_color["true"])
         holiday_color_ansi = generate_true_color_code(*holiday_color["true"])
         footnote_color_ansi = generate_true_color_code(*footnote_color["true"])
         header_color_ansi = generate_true_color_code(*header_color["true"])
-        today_color_ansi = generate_true_color_code(*today_color["true"])
+        today_color_ansi = generate_true_color_code(*today_color["true"], back=True)
     else:
         weekend_color_ansi = getattr(colorama.Fore, weekend_color["name"])
         holiday_color_ansi = getattr(colorama.Fore, holiday_color["name"])
         footnote_color_ansi = getattr(colorama.Fore, footnote_color["name"])
         header_color_ansi = getattr(colorama.Fore, header_color["name"])
-        today_color_ansi = getattr(colorama.Fore, today_color["name"])
+        today_color_ansi = getattr(colorama.Back, today_color["name"])
 
     bold_ansi = Style.BRIGHT if color else ""
     reset_color = Style.RESET_ALL if color else ""
@@ -183,11 +193,16 @@ def generate_calendar(
     for day in range(1, num_days + 1):
         weekday = (day + first_day_of_month) % 7
         day_str = str(day)
+        day_str_orig_len = len(day_str)
         day_str = day_str.rjust(indentation - last_indentation_debt)
         last_indentation_debt = 0
         if today.date().year == year and today.date().month == month and today.date().day == day:
-            day_str = f"{bold_ansi}{today_color_ansi}{day_str}{reset_color}"
-        elif day in holidays:
+            # bg_len = (day_str_orig_len + 1)
+            bg_len = 3
+
+            day_str = f"{day_str[:-bg_len]}{bold_ansi}{today_color_ansi}{day_str[-bg_len:]}{reset_color}"
+
+        if day in holidays:
             footnotes.append(f"{day:2d}: {holidays[day]}")
 
             if (
