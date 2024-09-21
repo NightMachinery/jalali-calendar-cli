@@ -37,7 +37,6 @@ COLOR_PRESETS = {
         "holiday": {"name": "LIGHTRED_EX", "true": (255, 0, 0)},
         "footnote": {"name": "LIGHTBLACK_EX", "true": (128, 128, 128)},
         "header": {"name": "WHITE", "true": (255, 255, 255)},
-
         # "today": {"name": "CYAN", "true": (30, 200, 200)},
         "today": {"name": "CYAN", "true": (255, 120, 0)},
         # "today": {"name": "WHITE", "true": (255, 255, 255)},
@@ -196,7 +195,11 @@ def generate_calendar(
         day_str_orig_len = len(day_str)
         day_str = day_str.rjust(indentation - last_indentation_debt)
         last_indentation_debt = 0
-        if today.date().year == year and today.date().month == month and today.date().day == day:
+        if (
+            today.date().year == year
+            and today.date().month == month
+            and today.date().day == day
+        ):
             # bg_len = (day_str_orig_len + 1)
             bg_len = 3
 
@@ -229,7 +232,7 @@ def generate_calendar(
         # ic(indentation, day_str, day_str.rjust(indentation))
         calendar.append(day_str)
 
-        if weekday == 0:
+        if weekday == 0 and day != num_days:
             calendar.append("\n")
             last_indentation_debt = header_indentation_len
 
@@ -273,6 +276,7 @@ def jalali_calendar(
     footnote_color=None,
     header_color=None,
     today_color=None,
+    line_prefix=" ",
 ) -> None:
     j_date = jdatetime.date(year, month, 1)
     first_day_of_month = j_date.weekday()
@@ -295,14 +299,14 @@ def jalali_calendar(
         footnote_color=footnote_color,
         header_color=header_color,
     )
-    line_indent = " "
-    calendar = prefix_lines(calendar, prefix=line_indent)
+    # ic(repr(calendar))
+    calendar = prefix_lines(calendar, prefix=line_prefix)
     print(calendar)
 
     if footnotes_p:
-        footnotes = prefix_lines(footnotes, prefix=f"{line_indent}  ")
+        footnotes = prefix_lines(footnotes, prefix=f"{line_prefix}  ")
 
-        print(f"\n{line_indent}Holidays:")
+        print(f"\n{line_prefix}Holidays:")
         print(footnotes)
 
 
@@ -318,7 +322,7 @@ def main(args=None) -> None:
     parser = argparse.ArgumentParser()
 
     ##
-    # Get current Jalali date
+    #: Get current Jalali date
     now = datetime.datetime.now()
     now_jalali = jdatetime.datetime.now()
 
@@ -375,6 +379,12 @@ def main(args=None) -> None:
         help="number of spaces for indentation (default: 5)",
     )
     parser.add_argument(
+        "--line-prefix",
+        type=str,
+        default=" ",
+        help="a prefix that is added to all lines of the output (default: ' ')",
+    )
+    parser.add_argument(
         "--holidays-json-path",
         type=str,
         default=default_holiday_data_json_path,
@@ -383,7 +393,10 @@ def main(args=None) -> None:
 
     parser.add_argument(
         "--color-preset",
-        choices=["light", "dark",],
+        choices=[
+            "light",
+            "dark",
+        ],
         default="light",
         help="color preset for the calendar output (default: light)",
     )
@@ -479,7 +492,7 @@ def main(args=None) -> None:
     holiday_color = colors.get("holiday", None)
     footnote_color = colors.get("footnote", None)
     header_color = colors.get("header", None)
-    today_color= colors.get("today", None)
+    today_color = colors.get("today", None)
 
     unicode_p = True
     # unicode_p = args.unicode
@@ -503,6 +516,7 @@ def main(args=None) -> None:
         footnote_color=footnote_color,
         header_color=header_color,
         today_color=today_color,
+        line_prefix=args.line_prefix,
     )
 
 
