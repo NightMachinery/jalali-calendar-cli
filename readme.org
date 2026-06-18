@@ -203,5 +203,5 @@ YELLOW
 * Holiday Data
 The default data dictionary is [[https://github.com/NightMachinery/jalali-calendar-cli/blob/master/jalali_calendar_cli/holidays.json][here]]. I plan to keep the data up-to-date for the upcoming years, but you can always supply your own.
 
-The holiday data of previous years (≤1401) has not been added.
+The bundled holiday data currently covers years 1402 through 1405. The holiday data of previous years (≤1401) has not been added.
 
