@@ -47,6 +47,8 @@ COLOR_PRESETS = {
 COLOR_KEYS = tuple(COLOR_PRESETS["light"].keys())
 BACKGROUND_KEYS = frozenset({"today", "secondary_holiday", "secondary_weekend"})
 
+UNDERLINE = "\x1b[4m"
+
 ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 
@@ -157,7 +159,10 @@ def render_grid(
         last_indentation_debt = 0
 
         #: The highlight is a background on the last three characters of the cell.
-        if today is not None and cell.date == today:
+        #: With two holiday sets the background belongs to the second set, so today is
+        #: marked with bold and underline instead, keeping that background.
+        is_today = today is not None and cell.date == today
+        if is_today and not cell.overlay:
             highlight = f"{bold_ansi}{p['today']}"
         elif cell.secondary_holiday:
             highlight = p["secondary_holiday"]
@@ -165,6 +170,8 @@ def render_grid(
             highlight = p["secondary_weekend"]
         else:
             highlight = ""
+        if is_today and cell.overlay and opts.color:
+            highlight += f"{bold_ansi}{UNDERLINE}"
 
         if highlight:
             # bg_len = (day_str_orig_len + 1)
