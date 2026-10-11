@@ -134,10 +134,10 @@ The current day is highlighted:
 [[file:readme.org_imgs/20230630_060229_Temg6y.png]]
 
 *** Seeing All Months Together
-There is a Perl script included in this repository that prints all months together. This script is a WIP.
+=jcal-all= prints all months of a year together, three per row:
 
 #+begin_example zsh
-perl ./jcal_all.pl 1402 --outer-indent 2 --horizontal-indent 1
+jcal-all 1402 --outer-indent 2 --horizontal-indent 1
 #+end_example
 
 #+begin_example

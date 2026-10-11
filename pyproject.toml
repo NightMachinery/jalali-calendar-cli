@@ -10,6 +10,7 @@ packages = [{include = "jalali_calendar_cli"}]
 [tool.poetry.scripts]
 jcal = 'jalali_calendar_cli.jalali_calendar:main'
 jalali-calendar = 'jalali_calendar_cli.jalali_calendar:main'
+jcal-all = 'jalali_calendar_cli.commands:jcal_all'
 
 
 [tool.poetry.dependencies]

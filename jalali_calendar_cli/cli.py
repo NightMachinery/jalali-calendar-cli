@@ -23,9 +23,13 @@ COLOR_HELP = {
 }
 
 
-def add_display_args(parser, *, indentation=5, line_prefix=" ", footnotes=True):
+def add_display_args(parser, *, indentation=5, line_prefix=" ", footnotes=True, short_flags=False):
+    #: The year view keeps the short flags of the old `jcal_all.pl`.
+    def flags(short, long):
+        return [short, long] if short_flags else [long]
+
     parser.add_argument(
-        "--color",
+        *flags("-c", "--color"),
         choices=["auto", "always", "never"],
         default="auto",
         help="colorize the output",
@@ -52,13 +56,13 @@ def add_display_args(parser, *, indentation=5, line_prefix=" ", footnotes=True):
         help="show footnotes in the output",
     )
     parser.add_argument(
-        "--indentation",
+        *flags("-i", "--indentation"),
         type=int,
         default=indentation,
         help=f"number of spaces for indentation (default: {indentation})",
     )
     parser.add_argument(
-        "--line-prefix",
+        *flags("-p", "--line-prefix"),
         type=str,
         default=line_prefix,
         help=f"a prefix that is added to all lines of the output (default: {line_prefix!r})",
