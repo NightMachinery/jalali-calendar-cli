@@ -126,7 +126,10 @@ overridden with the =--KEY-color= and =--KEY-true-color= options.
 years ahead. The script ([[file:../jalali_calendar_cli/web/app.js][web/app.js]]) only
 chooses which months to show, marks today from the browser's clock (so a page generated
 months ago is still right about today), and remembers the view, the theme and the
-"Show the holiday list" checkbox (off by default) in =localStorage=. There is no automatic dark mode: the theme is a manual switch.
+checkboxes in =localStorage=: "Show the holiday list" (off by default), and "Also show the
+next month" and "Also show the start of the next year" (on by default). The latter adds as
+many of the next year's months as the year grid has columns at the current width, that
+is one row: 4 on a wide screen, January alone on a phone. There is no automatic dark mode: the theme is a manual switch.
 
 Generation is deterministic and writes only files whose content changed, so a second run
 reports =unchanged= for all three files (tested). [[file:../site/holidays/refresh.sh][site/holidays/refresh.sh]]

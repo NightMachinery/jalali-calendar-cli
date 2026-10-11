@@ -103,7 +103,11 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
 <button type="button" id="theme" aria-label="Switch light and dark theme">&#9680;</button>
 </div>
 {"".join(legends)}
+<div class="options">
 <label class="option"><input type="checkbox" id="show-notes"> Show the holiday list</label>
+<label class="option" data-mode="month"><input type="checkbox" id="show-next-month"> Also show the next month</label>
+<label class="option" data-mode="year"><input type="checkbox" id="show-next-row"> Also show the start of the next year</label>
+</div>
 </header>
 <main id="months" class="month">
 {chr(10).join(months)}

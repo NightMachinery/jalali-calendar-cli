@@ -136,6 +136,12 @@ button[aria-pressed="true"] {
   font-variant-numeric: tabular-nums;
 }
 
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+}
+
 .option {
   display: inline-flex;
   align-items: center;
