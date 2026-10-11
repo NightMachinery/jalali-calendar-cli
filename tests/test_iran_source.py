@@ -41,3 +41,21 @@ def test_jcal_for_covered_year_does_not_import_holidays():
     )
     out = subprocess.run([sys.executable, "-c", code], check=True, capture_output=True, text=True).stdout
     assert out.strip() == "False"
+
+
+def test_30_esfand_is_a_holiday_in_leap_years():
+    #: 1403 is a leap year; the bundled data does not list 30 Esfand itself
+    start = JALALI.to_gregorian(1403, 12, 1)
+    end = JALALI.to_gregorian(1403, 12, 30)
+    events = jalali_dates(IranSource().events(start, end))
+    assert events[(1403, 12, 30)] == "Last Day of Year"
+    #: 1404 is not a leap year, so there is no 30 Esfand
+    assert (1404, 12, 30) not in year_events(IranSource(), 1404)
+
+
+def test_30_esfand_in_a_computed_leap_year():
+    #: 1408 is the next leap year, outside the bundled data
+    start = JALALI.to_gregorian(1408, 12, 1)
+    end = JALALI.to_gregorian(1408, 12, 30)
+    events = jalali_dates(IranSource().events(start, end))
+    assert (1408, 12, 30) in events

@@ -13,7 +13,7 @@ from typing import Dict
 
 import jdatetime
 
-from ..calendars import JALALI
+from ..calendars import JALALI, get_jalali_days
 
 DEFAULT_HOLIDAYS_JSON_PATH = str(pathlib.Path(__file__).parent.parent / "holidays.json")
 
@@ -24,6 +24,11 @@ DEFAULT_HOLIDAYS_JSON_PATH = str(pathlib.Path(__file__).parent.parent / "holiday
 THURSDAY = 3
 FRIDAY = 4
 DEFAULT_WEEKEND = frozenset({THURSDAY, FRIDAY})
+
+#: 30 Esfand, which exists only in leap years, is always an official holiday: it falls in
+#: the 29 Esfand to 4 Farvardin holiday span. The Ministry of Labour: "روز سی‌ام اسفندماه
+#: همواره جزو تعطیلات رسمی کشور محسوب می‌شود" (Donya-e-Eqtesad, 4 Dey 1395).
+LAST_DAY_OF_YEAR = "Last Day of Year"
 
 
 def default_holidays_json_path() -> str:
@@ -51,7 +56,12 @@ class IranSource:
 
     def jalali_year_events(self, year: int) -> Dict[datetime.date, str]:
         if year not in self._years:
-            self._years[year] = self._jalali_year_events(year)
+            events = self._jalali_year_events(year)
+            #: a year with no data at all (fallback off) stays empty
+            if get_jalali_days(year, 12) == 30 and (events or self.fallback):
+                events.setdefault(JALALI.to_gregorian(year, 12, 30), LAST_DAY_OF_YEAR)
+                events = dict(sorted(events.items()))
+            self._years[year] = events
         return self._years[year]
 
     def _jalali_year_events(self, year: int) -> Dict[datetime.date, str]:
