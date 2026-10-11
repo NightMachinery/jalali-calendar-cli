@@ -168,7 +168,11 @@ button[aria-expanded="true"] {
   accent-color: var(--accent);
 }
 
-main.hide-notes /* a day's tooltip, positioned by app.js */
+main.hide-notes .notes {
+  display: none;
+}
+
+/* a day's tooltip, positioned by app.js */
 .grid tbody td[tabindex] {
   cursor: default;
 }
@@ -264,10 +268,6 @@ main.hide-notes /* a day's tooltip, positioned by app.js */
   background: var(--shared-bg);
   font-size: 12px;
   font-weight: 700;
-}
-
-.notes {
-  display: none;
 }
 
 /* narrow phones: smaller controls, so that each header row fits on one line */
