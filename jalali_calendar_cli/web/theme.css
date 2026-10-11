@@ -136,6 +136,27 @@ button[aria-pressed="true"] {
   font-variant-numeric: tabular-nums;
 }
 
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.option input {
+  margin: 0;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+main.hide-notes .notes {
+  display: none;
+}
+
 main {
   padding: 12px 16px 32px;
   display: grid;

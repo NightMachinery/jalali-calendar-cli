@@ -125,8 +125,8 @@ overridden with the =--KEY-color= and =--KEY-true-color= options.
 =jcal-html --out DIR= pre-renders every month of every view for last year through two
 years ahead. The script ([[file:../jalali_calendar_cli/web/app.js][web/app.js]]) only
 chooses which months to show, marks today from the browser's clock (so a page generated
-months ago is still right about today), and remembers the view and theme in
-=localStorage=. There is no automatic dark mode: the theme is a manual switch.
+months ago is still right about today), and remembers the view, the theme and the
+"Show the holiday list" checkbox (off by default) in =localStorage=. There is no automatic dark mode: the theme is a manual switch.
 
 Generation is deterministic and writes only files whose content changed, so a second run
 reports =unchanged= for all three files (tested). [[file:../site/holidays/refresh.sh][site/holidays/refresh.sh]]

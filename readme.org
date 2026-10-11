@@ -291,7 +291,7 @@ gcal-lmu-iran 6 2026 --color never
 The Iranian weekend is Thursday and Friday by default; =--iran-weekend fri= gives the official reading, where only Friday is the weekend.
 
 ** HTML Page
-=jcal-html --out DIR= writes =index.html=, =theme.css= and =app.js= to =DIR=: a static page, built for phones, with the four views (LMU, LMU + Iran, Iran, Iran + LMU) for last year through two years ahead (=--from-year=, =--to-year=). It uses the same colors as the terminal, has a month and a year mode, marks today in the browser, and has a manual light/dark switch. Running it again on the same inputs rewrites nothing. =site/holidays/refresh.sh= builds it from a checkout of this repository.
+=jcal-html --out DIR= writes =index.html=, =theme.css= and =app.js= to =DIR=: a static page, built for phones, with the four views (LMU, LMU + Iran, Iran, Iran + LMU) for last year through two years ahead (=--from-year=, =--to-year=). It uses the same colors as the terminal, has a month and a year mode, marks today in the browser, hides the holiday lists under the months unless a checkbox asks for them, and has a manual light/dark switch. Running it again on the same inputs rewrites nothing. =site/holidays/refresh.sh= builds it from a checkout of this repository.
 
 ** =colorama= Colors
 These colors are defined by your terminal theme, and are used when the terminal does not advertise 24-bit color.

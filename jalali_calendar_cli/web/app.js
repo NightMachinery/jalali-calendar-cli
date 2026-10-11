@@ -1,5 +1,6 @@
 // Holiday calendar page. Every month is already rendered by the generator; this only
-// chooses which ones to show, marks today, and remembers the view and theme.
+// chooses which ones to show, marks today, and remembers the view, the theme and whether
+// the holiday lists are shown.
 (function () {
   "use strict";
 
@@ -92,6 +93,7 @@
       });
     }
     main.className = state.mode;
+    applyNotes();
     legends.forEach(function (l) {
       l.hidden = l.dataset.view !== state.view;
     });
@@ -146,6 +148,17 @@
     state.anchor = today;
     render();
   });
+  // The holiday lists under the months are hidden unless asked for.
+  var showNotes = document.getElementById("show-notes");
+  function applyNotes() {
+    main.classList.toggle("hide-notes", !showNotes.checked);
+  }
+  showNotes.checked = load("cal-notes") === "1";
+  showNotes.addEventListener("change", function () {
+    store("cal-notes", showNotes.checked ? "1" : "0");
+    applyNotes();
+  });
+
   document.getElementById("theme").addEventListener("click", function () {
     var root = document.documentElement;
     var next = root.dataset.theme === "dark" ? "light" : "dark";

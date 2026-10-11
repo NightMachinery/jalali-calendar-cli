@@ -57,3 +57,10 @@ def test_generation_is_idempotent(tmp_path, capsys):
     main(argv)
     assert tree_hash(tmp_path) == first
     assert capsys.readouterr().out.count("unchanged:") == 3
+
+
+def test_holiday_lists_have_a_switch():
+    files = build_page({"lmu": LmuSource(), "iran": IranSource()}, 2026, 2026)
+    assert 'id="show-notes"' in files["index.html"]
+    assert "main.hide-notes .notes" in files["theme.css"]
+    assert 'getElementById("show-notes")' in files["app.js"]
