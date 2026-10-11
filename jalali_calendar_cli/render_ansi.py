@@ -25,8 +25,8 @@ COLOR_PRESETS = {
         "header": {"name": "BLACK", "true": (50, 50, 50)},
         # "today": {"name": "CYAN", "true": (50, 230, 230)},
         "today": {"name": "CYAN", "true": (255, 255, 255)},
-        #: both sides are free on this day
-        "shared": {"name": "YELLOW", "true": (184, 134, 11)},
+        #: the background of a day on which both sides are free
+        "shared": {"name": "YELLOW", "true": (247, 212, 125)},
         "secondary_holiday": {"name": "CYAN", "true": (150, 215, 232)},
         "secondary_weekend": {"name": "LIGHTBLACK_EX", "true": (222, 241, 247)},
     },
@@ -38,14 +38,14 @@ COLOR_PRESETS = {
         # "today": {"name": "CYAN", "true": (30, 200, 200)},
         "today": {"name": "CYAN", "true": (255, 120, 0)},
         # "today": {"name": "WHITE", "true": (255, 255, 255)},
-        "shared": {"name": "LIGHTYELLOW_EX", "true": (255, 205, 40)},
+        "shared": {"name": "YELLOW", "true": (110, 82, 0)},
         "secondary_holiday": {"name": "CYAN", "true": (0, 98, 120)},
         "secondary_weekend": {"name": "LIGHTBLACK_EX", "true": (0, 44, 54)},
     },
 }
 
 COLOR_KEYS = tuple(COLOR_PRESETS["light"].keys())
-BACKGROUND_KEYS = frozenset({"today", "secondary_holiday", "secondary_weekend"})
+BACKGROUND_KEYS = frozenset({"today", "shared", "secondary_holiday", "secondary_weekend"})
 
 UNDERLINE = "\x1b[4m"
 
@@ -179,11 +179,13 @@ def render_grid(
         last_indentation_debt = 0
 
         #: The highlight is a background on the last three characters of the cell.
-        #: With two holiday sets the background belongs to the second set, so today is
-        #: marked with bold and underline instead, keeping that background.
+        #: With two holiday sets the background belongs to the second set, or is gold when
+        #: both sides are free, so today is marked with bold and underline instead.
         is_today = today is not None and cell.date == today
         if is_today and not cell.overlay:
             highlight = f"{bold_ansi}{p['today']}"
+        elif cell.both_free:
+            highlight = p["shared"]
         elif cell.secondary_holiday:
             highlight = p["secondary_holiday"]
         elif cell.secondary_weekend:
@@ -203,9 +205,7 @@ def render_grid(
 
             day_str = f"{head}{highlight}{tail}{reset_color}"
 
-        if cell.both_free:
-            day_str = f"{bold_ansi}{p['shared']}{day_str}{reset_color}"
-        elif cell.primary_holiday:
+        if cell.primary_holiday:
             day_str = f"{bold_ansi}{p['holiday']}{day_str}{reset_color}"
         elif cell.primary_weekend:
             day_str = f"{p['weekend']}{day_str}{reset_color}"

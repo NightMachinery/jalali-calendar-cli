@@ -1,5 +1,5 @@
 /* Holiday calendar page. Colors mirror the terminal presets: text color is the first
-   holiday set, background the second, gold text means both sides are free. */
+   holiday set, background the second, a gold background means both sides are free. */
 
 :root {
   --bg: #fbfaf7;
@@ -10,7 +10,7 @@
   --accent: #2f5d8a;
   --holiday: #d23f00;
   --weekend: #6a2a9c;
-  --shared: #a8740a;
+  --shared-bg: #f7d47d;
   --sec-holiday-bg: #96d7e8;
   --sec-weekend-bg: #e2f2f7;
   --today-ring: #22201c;
@@ -26,7 +26,7 @@
   --accent: #8cb8e6;
   --holiday: #ff6b5a;
   --weekend: #e08ae6;
-  --shared: #ffcd28;
+  --shared-bg: #6e5200;
   --sec-holiday-bg: #00627a;
   --sec-weekend-bg: #0d2f39;
   --today-ring: #ff9a3c;
@@ -215,14 +215,9 @@ main.year .grid td {
   background: var(--sec-weekend-bg);
 }
 
-/* both sides free */
+/* both sides free: replaces the second set's background, after it so that it wins */
 .both {
-  color: var(--shared);
-  font-weight: 800;
-}
-
-:root[data-theme="light"] .both {
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+  background: var(--shared-bg);
 }
 
 .grid th.pw {

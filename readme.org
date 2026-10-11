@@ -86,8 +86,8 @@ options:
                         RGB values for the current day's color in 24-bit true
                         color
   --shared-true-color SHARED_TRUE_COLOR
-                        RGB values for days on which both shown holiday sets
-                        are free in 24-bit true color
+                        RGB values for the background of days on which both
+                        shown holiday sets are free in 24-bit true color
   --secondary-holiday-true-color SECONDARY_HOLIDAY_TRUE_COLOR
                         RGB values for the background of the second holiday
                         set's holidays in 24-bit true color
@@ -105,8 +105,8 @@ colorama 256 color options:
   --today-color TODAY_COLOR
                         colorama color name for the current day's color
   --shared-color SHARED_COLOR
-                        colorama color name for days on which both shown
-                        holiday sets are free
+                        colorama color name for the background of days on
+                        which both shown holiday sets are free
   --secondary-holiday-color SECONDARY_HOLIDAY_COLOR
                         colorama color name for the background of the second
                         holiday set's holidays
@@ -260,9 +260,9 @@ gcal-lmu 12 2026
 In color, each set has its own channel:
 - *text color* is the first set: red for a holiday, magenta for its weekend;
 - *background* is the second set: a strong tint for a holiday, a faint tint for its weekend, which runs down the whole column from the weekday label;
-- *bold gold text* marks a day on which both sides are free, whether by holiday or by weekend.
+- a *gold background* marks a day on which both sides are free, whether by holiday or by weekend. It takes the place of the second set's tint, and the text keeps the first set's color.
 
-In the overlay views today is bold and underlined rather than highlighted, so that the background always means the second set.
+The background thus goes from nothing to faint (their weekend), strong (their holiday) and gold (both free); the footnotes say why. In the overlay views today is bold and underlined rather than highlighted, so that the background keeps this meaning.
 
 A second title line gives the other calendar's months (in the year views it shares the title line, abbreviated, as in =2026 March · Esf–Far=), and the footnotes are tagged with their set. Entries of the second set carry their date in their own calendar:
 

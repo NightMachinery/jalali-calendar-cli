@@ -89,7 +89,15 @@ One channel per source, so they can be read independently:
 - background is the secondary source: a strong tint for a holiday, a faint tint for its
   weekend, which covers the whole column, from the weekday label down through the empty
   cells before the first and after the last day;
-- bold gold text means both sides are free that day, by holiday or by weekend.
+- a gold background means both sides are free that day, by holiday or by weekend. It
+  replaces the secondary source's tint on that day, and the text keeps the primary
+  source's color.
+
+Gold was first a text color laid over the secondary background; gold text on light blue
+was hard to read (a contrast ratio near 2:1), and a gold block is the more visible answer
+to the question these views exist for: when are both sides free. The cost is that a gold
+day no longer shows whether the secondary side is off for a holiday or its weekend; the
+column and the footnotes still say.
 
 Today is marked in a way that leaves both channels alone: bold and underlined in the
 terminal's overlay views, an outline ring on the page. (Single-source terminal views keep

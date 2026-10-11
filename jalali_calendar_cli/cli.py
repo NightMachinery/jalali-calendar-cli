@@ -18,7 +18,7 @@ COLOR_HELP = {
     "footnote": None,
     "header": "header color",
     "today": "the current day's color",
-    "shared": "days on which both shown holiday sets are free",
+    "shared": "the background of days on which both shown holiday sets are free",
     "secondary_holiday": "the background of the second holiday set's holidays",
     "secondary_weekend": "the background of the second holiday set's weekend",
 }

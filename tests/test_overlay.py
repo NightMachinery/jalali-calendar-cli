@@ -10,7 +10,8 @@ from jalali_calendar_cli.sources.lmu import LmuSource
 
 SECONDARY_HOLIDAY_BG = "\x1b[48;2;150;215;232m"
 SECONDARY_WEEKEND_BG = "\x1b[48;2;222;241;247m"
-SHARED_FG = "\x1b[38;2;184;134;11m"
+HOLIDAY_FG = "\x1b[1m\x1b[38;2;230;69;0m"
+SHARED_BG = "\x1b[48;2;247;212;125m"
 
 
 def run(command, argv):
@@ -44,8 +45,8 @@ def test_june_2026_colors():
     #: header: the Iranian weekend is tinted
     assert f"{SECONDARY_WEEKEND_BG}Thu" in lines[2]
     assert f"{SECONDARY_WEEKEND_BG}Fri" in lines[2]
-    #: Jun 4: both off, gold text on the secondary-holiday background
-    assert f"{SHARED_FG}  {SECONDARY_HOLIDAY_BG}  4" in lines[3]
+    #: Jun 4: both off, the first set's holiday text on the gold background
+    assert f"{HOLIDAY_FG}  {SHARED_BG}  4" in lines[3]
     #: Jun 11: a plain Thursday, the faint weekend tint
     assert f"{SECONDARY_WEEKEND_BG} 11" in lines[4]
     #: Jun 24: an Iranian holiday on a Wednesday, background only
