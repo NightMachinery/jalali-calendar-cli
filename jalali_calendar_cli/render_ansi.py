@@ -170,14 +170,18 @@ def render_grid(
             highlight = p["secondary_weekend"]
         else:
             highlight = ""
-        if is_today and cell.overlay and opts.color:
-            highlight += f"{bold_ansi}{UNDERLINE}"
+        underline = is_today and cell.overlay and opts.color
 
-        if highlight:
+        if highlight or underline:
             # bg_len = (day_str_orig_len + 1)
             bg_len = 3
+            head, tail = day_str[:-bg_len], day_str[-bg_len:]
+            if underline:
+                #: only under the digits, not the padding before them
+                digits = len(str(day))
+                tail = f"{tail[:-digits]}{bold_ansi}{UNDERLINE}{tail[-digits:]}"
 
-            day_str = f"{day_str[:-bg_len]}{highlight}{day_str[-bg_len:]}{reset_color}"
+            day_str = f"{head}{highlight}{tail}{reset_color}"
 
         if cell.both_free:
             day_str = f"{bold_ansi}{p['shared']}{day_str}{reset_color}"

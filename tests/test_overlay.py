@@ -102,6 +102,7 @@ def test_today_keeps_the_secondary_background_in_overlay_views():
     opts = DisplayOptions(color=True, true_color=True)
     #: Jun 11 is a Thursday: the faint Iranian-weekend tint, plus bold and underline for today
     out = format_month(model, opts, today=datetime.date(2026, 6, 11))
-    assert f"{SECONDARY_WEEKEND_BG}\x1b[1m\x1b[4m 11" in out
+    #: the underline starts at the digits, not at the padding before them
+    assert f"{SECONDARY_WEEKEND_BG} \x1b[1m\x1b[4m11" in out
     #: today's own background is not used
     assert "\x1b[48;2;255;255;255m" not in out
