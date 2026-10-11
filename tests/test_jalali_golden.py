@@ -6,7 +6,9 @@ import pytest
 
 GOLDEN_DIR = pathlib.Path(__file__).parent / "golden"
 
-#: Each golden file was captured from `jcal` before the renderer refactor.
+#: The plain golden files and the `_fri` colored ones were captured from `jcal` before the
+#: renderer refactor, when Friday was the only weekend day. The colored ones without
+#: `_fri` show the Thursday + Friday weekend.
 #: None of these months contain "today", so the output is date-independent.
 CASES = {
     "jcal_7_1402.txt": ["7", "1402", "--color", "never"],
@@ -25,6 +27,18 @@ CASES = {
         "",
     ],
     "jcal_7_1402_ansi.txt": ["7", "1402", "--color", "always"],
+    "jcal_7_1402_ansi_fri.txt": ["7", "1402", "--color", "always", "--iran-weekend", "fri"],
+    "jcal_7_1402_truecolor_dark_fri.txt": [
+        "7",
+        "1402",
+        "--color",
+        "always",
+        "--true-color",
+        "--color-preset",
+        "dark",
+        "--iran-weekend",
+        "fri",
+    ],
     "jcal_7_1402_truecolor_dark.txt": [
         "7",
         "1402",

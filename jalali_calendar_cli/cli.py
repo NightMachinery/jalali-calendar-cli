@@ -114,6 +114,22 @@ def display_options_from_args(args) -> DisplayOptions:
     )
 
 
+WEEKDAY_NAMES = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+
+
+def parse_weekdays(text: str) -> frozenset:
+    """"thu,fri" to Python weekdays (Monday is 0); "" means no weekend."""
+    days = set()
+    for part in text.split(","):
+        part = part.strip().lower()[:3]
+        if not part:
+            continue
+        if part not in WEEKDAY_NAMES:
+            raise argparse.ArgumentTypeError(f"unknown weekday: {part!r}")
+        days.add(WEEKDAY_NAMES.index(part))
+    return frozenset(days)
+
+
 def add_source_args(parser):
     group = parser.add_argument_group("holiday data")
     group.add_argument(
@@ -122,13 +138,22 @@ def add_source_args(parser):
         default=None,
         help="path to JSON file containing Iranian holiday data (default: the bundled data, or $JALALI_HOLIDAYS_JSON_PATH)",
     )
+    group.add_argument(
+        "--iran-weekend",
+        type=parse_weekdays,
+        default="thu,fri",
+        help="comma-separated weekdays that are the weekend in Iran (default: thu,fri; use 'fri' for the official reading)",
+    )
 
 
 def make_source(name: str, args):
     if name == "iran":
         from .sources.iran import IranSource
 
-        return IranSource(holidays_json_path=args.holidays_json_path)
+        return IranSource(
+            holidays_json_path=args.holidays_json_path,
+            weekend=args.iran_weekend,
+        )
 
     raise ValueError(f"unknown holiday source: {name}")
 

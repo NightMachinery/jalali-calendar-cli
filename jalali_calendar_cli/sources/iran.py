@@ -13,8 +13,13 @@ from ..calendars import JALALI
 
 DEFAULT_HOLIDAYS_JSON_PATH = str(pathlib.Path(__file__).parent.parent / "holidays.json")
 
-#: Python weekdays (Monday is 0)
+#: Python weekdays (Monday is 0).
+#: Officially only Friday is the weekend (`holidays.Iran.weekend == {4}`), but Thursday is
+#: off in practice for much of the country; a law making it official has been pending
+#: since 2024. `--iran-weekend fri` gives the strict reading.
+THURSDAY = 3
 FRIDAY = 4
+DEFAULT_WEEKEND = frozenset({THURSDAY, FRIDAY})
 
 
 def default_holidays_json_path() -> str:
@@ -25,7 +30,7 @@ class IranSource:
     tag = "IR"
     calendar = JALALI
 
-    def __init__(self, holidays_json_path=None, weekend=frozenset({FRIDAY})):
+    def __init__(self, holidays_json_path=None, weekend=DEFAULT_WEEKEND):
         self.holidays_json_path = holidays_json_path or default_holidays_json_path()
         self.weekend = frozenset(weekend)
         self._data = None
