@@ -3,6 +3,7 @@
 ##
 import argparse
 import datetime
+import os
 import sys
 from dataclasses import dataclass
 from typing import Optional
@@ -45,9 +46,9 @@ def add_display_args(parser, *, indentation=5, line_prefix=" ", footnotes=True, 
     parser.add_argument(
         "--true-color",
         action=argparse.BooleanOptionalAction,
-        # default=True,
-        default=False,  #: to make the default compatible with dark themes
-        help="enable true color support for output",
+        #: `None` detects it from the environment, see `terminal_supports_true_color`.
+        default=None,
+        help="use 24-bit colors (default: when the terminal advertises them)",
     )
     parser.add_argument(
         "--footnotes",
@@ -93,12 +94,37 @@ def add_display_args(parser, *, indentation=5, line_prefix=" ", footnotes=True, 
         )
 
 
+#: Terminals known to support 24-bit color that do not always set `COLORTERM`.
+TRUE_COLOR_TERM_PROGRAMS = frozenset({"iTerm.app", "WezTerm", "vscode", "ghostty"})
+TRUE_COLOR_TERMS = frozenset({"xterm-kitty", "xterm-ghostty", "alacritty", "wezterm"})
+
+
+def terminal_supports_true_color(environ=None) -> bool:
+    """Whether the terminal advertises 24-bit color.
+
+    `COLORTERM=truecolor` (or `24bit`) is the de facto convention; a `TERM` ending in
+    `-direct` is terminfo's. The rest is a short list of terminals that support it
+    without always saying so, e.g. when `COLORTERM` was lost over ssh or sudo.
+    """
+    if environ is None:
+        environ = os.environ
+    if environ.get("COLORTERM", "").lower() in ("truecolor", "24bit"):
+        return True
+    term = environ.get("TERM", "")
+    if term.endswith("-direct") or term in TRUE_COLOR_TERMS:
+        return True
+    return environ.get("TERM_PROGRAM", "") in TRUE_COLOR_TERM_PROGRAMS
+
+
 def display_options_from_args(args) -> DisplayOptions:
     color = (args.color == "always") or (args.color == "auto" and sys.stdout.isatty())
+    true_color = args.true_color
+    if true_color is None:
+        true_color = terminal_supports_true_color()
 
     colors = dict()
     for color_key in COLOR_KEYS:
-        if args.true_color:
+        if true_color:
             color_arg = getattr(args, f"{color_key}_true_color", None)
             if color_arg:
                 colors[color_key] = {"true": tuple(map(int, color_arg.split(",")))}
@@ -109,7 +135,7 @@ def display_options_from_args(args) -> DisplayOptions:
 
     return DisplayOptions(
         color=color,
-        true_color=args.true_color,
+        true_color=true_color,
         color_preset=args.color_preset,
         color_overrides=colors,
         indentation=args.indentation,

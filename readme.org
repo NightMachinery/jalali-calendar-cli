@@ -63,7 +63,8 @@ options:
   --color {auto,always,never}
                         colorize the output
   --true-color, --no-true-color
-                        enable true color support for output
+                        use 24-bit colors (default: when the terminal
+                        advertises them)
   --footnotes, --no-footnotes
                         show footnotes in the output
   --indentation INDENTATION
@@ -293,7 +294,9 @@ The Iranian weekend is Thursday and Friday by default; =--iran-weekend fri= give
 =jcal-html --out DIR= writes =index.html=, =theme.css= and =app.js= to =DIR=: a static page, built for phones, with the four views (LMU, LMU + Iran, Iran, Iran + LMU) for last year through two years ahead (=--from-year=, =--to-year=). It uses the same colors as the terminal, has a month and a year mode, marks today in the browser, and has a manual light/dark switch. Running it again on the same inputs rewrites nothing. =site/holidays/refresh.sh= builds it from a checkout of this repository.
 
 ** =colorama= Colors
-These colors are defined by your terminal theme. Use true (24-bit) colors if you want to specify colors in RGB.
+These colors are defined by your terminal theme, and are used when the terminal does not advertise 24-bit color.
+
+24-bit (true) colors, which are specified in RGB, are used by default when the terminal advertises them: =COLORTERM= is =truecolor= or =24bit=, =TERM= ends in =-direct=, or the terminal is one known to support them (kitty, Ghostty, Alacritty, WezTerm, iTerm2, VS Code). =--true-color= forces them, for example over an ssh connection that drops =COLORTERM=, and =--no-true-color= turns them off. The default =light= preset is meant for light terminal themes; use =--color-preset dark= on a dark one.
 
 #+begin_example
 BLACK

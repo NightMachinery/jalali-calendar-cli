@@ -26,8 +26,16 @@ CASES = {
         "--line-prefix",
         "",
     ],
-    "jcal_7_1402_ansi.txt": ["7", "1402", "--color", "always"],
-    "jcal_7_1402_ansi_fri.txt": ["7", "1402", "--color", "always", "--iran-weekend", "fri"],
+    "jcal_7_1402_ansi.txt": ["7", "1402", "--color", "always", "--no-true-color"],
+    "jcal_7_1402_ansi_fri.txt": [
+        "7",
+        "1402",
+        "--color",
+        "always",
+        "--no-true-color",
+        "--iran-weekend",
+        "fri",
+    ],
     "jcal_7_1402_truecolor_dark_fri.txt": [
         "7",
         "1402",
