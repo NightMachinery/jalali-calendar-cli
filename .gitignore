@@ -4,4 +4,7 @@ tmp
 site/holidays/index.html
 site/holidays/theme.css
 site/holidays/app.js
+site/holidays/manifest.webmanifest
+site/holidays/icon*
+site/holidays/apple-touch-icon.png
 site/holidays/data/

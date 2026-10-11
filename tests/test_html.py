@@ -88,7 +88,8 @@ def test_generation_is_idempotent(tmp_path, capsys):
     capsys.readouterr()
     main(argv)
     assert tree_hash(tmp_path) == first
-    assert capsys.readouterr().out.count("unchanged:") == 3
+    #: every file, the binary icons included
+    assert capsys.readouterr().out.count("unchanged:") == len(list(tmp_path.iterdir()))
 
 
 def test_holiday_lists_have_a_switch():
@@ -101,3 +102,26 @@ def test_holiday_lists_have_a_switch():
     assert 'option("show-notes", "cal-notes", false' in files["app.js"]
     assert 'option("show-next-month", "cal-next-month", true' in files["app.js"]
     assert 'option("show-next-row", "cal-next-row", true' in files["app.js"]
+
+
+def test_page_is_installable():
+    files = build_page({"lmu": LmuSource(), "iran": IranSource()}, 2026, 2026)
+    index = files["index.html"]
+    assert '<link rel="manifest" href="manifest.webmanifest"' in index
+    assert '<link rel="apple-touch-icon" href="apple-touch-icon.png">' in index
+    assert '<meta name="theme-color" content="#fbfaf7">' in index
+    manifest = json.loads(files["manifest.webmanifest"])
+    #: relative, since the page is served under a subpath
+    assert manifest["start_url"] == "./" and manifest["scope"] == "./"
+    assert manifest["display"] == "standalone"
+    icons = manifest["icons"]
+    assert {icon["sizes"] for icon in icons} >= {"192x192", "512x512"}
+    assert any(icon["purpose"] == "maskable" for icon in icons)
+    for icon in icons:
+        size = int(icon["sizes"].split("x")[0])
+        png = files[icon["src"]]
+        #: the PNG header's width and height
+        assert png[:8] == b"\x89PNG\r\n\x1a\n"
+        assert int.from_bytes(png[16:20], "big") == int.from_bytes(png[20:24], "big") == size
+    assert files["apple-touch-icon.png"][:4] == b"\x89PNG"
+    assert "icon.svg" in files

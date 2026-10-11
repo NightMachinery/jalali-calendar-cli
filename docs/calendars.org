@@ -144,8 +144,28 @@ between calendars itself. The tooltip is one element positioned by the script, n
 browser's =title= tooltip: it opens on hover with a mouse, on tap (tap again or elsewhere to
 close), and on keyboard focus, and stays inside the viewport.
 
+The page is installable as an app: =manifest.webmanifest= (written by =web_manifest()=)
+with relative =start_url= and =scope=, since the page is served under a subpath, and the
+iOS =apple-touch-icon= and title tags. Browsers offer to install only over HTTPS (or on
+=localhost=). The =theme-color= tag starts at the light background and =app.js= sets it
+from =--bg= whenever the theme changes, so the installed app's title bar follows the
+switch. The manifest link carries =crossorigin="use-credentials"=, so that it still loads
+if the page is put behind a login.
+
+The icons in [[file:../jalali_calendar_cli/web/][web/]] are copied as they are. The PNGs are renders of =icon.svg= (rounded,
+for the browser tab and desktop) and =icon-maskable.svg= (full bleed, with the sheet inside
+the central safe circle, for Android's masks and iOS), redone after editing either with:
+
+#+begin_example sh
+cd jalali_calendar_cli/web
+rsvg-convert -w 192 -h 192 icon.svg -o icon-192.png
+rsvg-convert -w 512 -h 512 icon.svg -o icon-512.png
+rsvg-convert -w 512 -h 512 icon-maskable.svg -o icon-maskable-512.png
+rsvg-convert -w 180 -h 180 icon-maskable.svg -o apple-touch-icon.png
+#+end_example
+
 Generation is deterministic and writes only files whose content changed, so a second run
-reports =unchanged= for all three files (tested). [[file:../site/holidays/refresh.sh][site/holidays/refresh.sh]]
+reports =unchanged= for every file (tested). [[file:../site/holidays/refresh.sh][site/holidays/refresh.sh]]
 runs it from a checkout of this repository into its own directory, where the output is
 gitignored.
 

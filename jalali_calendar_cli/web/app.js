@@ -216,11 +216,18 @@
     store("cal-key", open ? "1" : "0");
   });
 
+  // The browser's bar (the title bar of the installed app) in the page's background color.
+  var themeColor = document.querySelector('meta[name="theme-color"]');
+  function applyThemeColor() {
+    themeColor.content = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+  }
+  applyThemeColor();
   document.getElementById("theme").addEventListener("click", function () {
     var root = document.documentElement;
     var next = root.dataset.theme === "dark" ? "light" : "dark";
     root.dataset.theme = next;
     store("cal-theme", next);
+    applyThemeColor();
   });
   document.addEventListener("keydown", function (e) {
     if (e.target.closest && e.target.closest("input, textarea")) return;

@@ -6,6 +6,7 @@
 import argparse
 import datetime
 import hashlib
+import json
 import pathlib
 from html import escape
 from typing import List, Optional
@@ -16,6 +17,11 @@ from .render_html import month_html
 
 WEB_DIR = pathlib.Path(__file__).parent / "web"
 WEEKDAY_ABBRS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+#: Copied as they are. The PNGs are renders of icon.svg and icon-maskable.svg; see
+#: docs/calendars.org for how to redo them.
+ICON_FILES = ["icon.svg", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"]
+#: the light theme's --bg in theme.css; app.js keeps the browser's bar in step with the theme
+THEME_COLOR = "#fbfaf7"
 
 #: (id, button label, grid calendar, primary source name, secondary source name)
 VIEWS = [
@@ -64,8 +70,28 @@ def short_hash(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()[:10]
 
 
+def web_manifest() -> str:
+    #: relative URLs: the page is served under a subpath, and from any --out directory
+    manifest = {
+        "name": "Holidays",
+        "short_name": "Holidays",
+        "description": "LMU days off and Iranian holidays, alone or overlaid on one grid.",
+        "start_url": "./",
+        "scope": "./",
+        "display": "standalone",
+        "background_color": THEME_COLOR,
+        "theme_color": THEME_COLOR,
+        "icons": [
+            {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+            {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+            {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+        ],
+    }
+    return json.dumps(manifest, indent=2) + "\n"
+
+
 def build_page(sources: dict, first_year: int, last_year: int) -> dict:
-    """Returns {file name: content} for the page."""
+    """Returns {file name: content} for the page: text as str, the icons as bytes."""
     css = (WEB_DIR / "theme.css").read_text()
     js = (WEB_DIR / "app.js").read_text()
 
@@ -88,6 +114,12 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Holidays</title>
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="{THEME_COLOR}">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Holidays">
 <link rel="stylesheet" href="theme.css?v={short_hash(css)}">
 <script>try{{var t=localStorage.getItem("cal-theme");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 </head>
@@ -121,13 +153,16 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
 </body>
 </html>
 """
-    return {"index.html": index, "theme.css": css, "app.js": js}
+    files = {"index.html": index, "theme.css": css, "app.js": js, "manifest.webmanifest": web_manifest()}
+    files.update({name: (WEB_DIR / name).read_bytes() for name in ICON_FILES})
+    return files
 
 
-def write_if_changed(path: pathlib.Path, content: str) -> bool:
-    if path.exists() and path.read_text() == content:
+def write_if_changed(path: pathlib.Path, content) -> bool:
+    data = content.encode() if isinstance(content, str) else content
+    if path.exists() and path.read_bytes() == data:
         return False
-    path.write_text(content)
+    path.write_bytes(data)
     return True
 
 
@@ -139,7 +174,11 @@ def main(argv: Optional[list] = None) -> None:
         prog="jcal-html",
         description="Write a static HTML page with the Gregorian and Jalali calendars and their holidays.",
     )
-    parser.add_argument("--out", required=True, help="directory to write index.html, app.js and theme.css to")
+    parser.add_argument(
+        "--out",
+        required=True,
+        help="directory to write the page to: index.html, app.js, theme.css, the web app manifest and icons",
+    )
     parser.add_argument(
         "--from-year",
         type=int,
