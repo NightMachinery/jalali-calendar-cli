@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "jalali-calendar-cli"
-version = "0.1.9"
-description = "Jalali (Shamsi) calendar in your terminal, with holidays"
+version = "0.2.0"
+description = "Jalali (Shamsi) and Gregorian calendars in your terminal, with Iranian and LMU Munich holidays"
 authors = ["NightMachinery <feraidoonmehri@gmail.com>"]
 readme = "readme.org"
 packages = [{include = "jalali_calendar_cli"}]
