@@ -125,11 +125,13 @@ button[aria-pressed="true"] {
   gap: 6px;
 }
 
+/* a sample day cell, outlined so that it does not read as text */
 .legend .swatch {
   display: inline-block;
-  min-width: 26px;
+  min-width: 28px;
   padding: 1px 4px;
   text-align: center;
+  border: 1px solid var(--line);
   border-radius: 6px;
   font-variant-numeric: tabular-nums;
 }

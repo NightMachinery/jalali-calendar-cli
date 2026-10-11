@@ -31,18 +31,23 @@ def weekend_text(source) -> str:
 
 
 def legend_html(view_id: str, primary, secondary) -> str:
-    def item(classes, sample, text):
-        return f'<span class="item"><span class="swatch {classes}">{sample}</span>{escape(text)}</span>'
+    #: Each swatch is a sample day cell; the same number in all of them, so that it reads
+    #: as "a day looks like this" and not as a date.
+    def item(classes, text):
+        return (
+            f'<span class="item"><span class="swatch {classes}" aria-hidden="true">12</span>'
+            f"{escape(text)}</span>"
+        )
 
     items = [
-        item("ph", "4", f"{primary.label} holiday"),
-        item("pw", "6", f"{primary.label} weekend ({weekend_text(primary)})"),
+        item("ph", f"{primary.label} holiday"),
+        item("pw", f"{primary.label} weekend ({weekend_text(primary)})"),
     ]
     if secondary:
         items += [
-            item("sh", "5", f"{secondary.label} holiday"),
-            item("sw", "11", f"{secondary.label} weekend ({weekend_text(secondary)})"),
-            item("ph sh both", "4", "both free"),
+            item("sh", f"{secondary.label} holiday"),
+            item("sw", f"{secondary.label} weekend ({weekend_text(secondary)})"),
+            item("ph both", "both free"),
         ]
     return f'<div class="legend" data-view="{view_id}" hidden>{"".join(items)}</div>'
 
