@@ -191,10 +191,12 @@ main.year {
   font-size: 13px;
 }
 
+/* No vertical spacing, so that a weekend column (the cells' own background) is one band
+   from its label down; the gaps between rows are padding inside the cells instead. */
 .grid {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 3px;
+  border-spacing: 3px 0;
   margin-top: 8px;
   table-layout: fixed;
 }
@@ -203,20 +205,33 @@ main.year {
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
-  padding: 2px 0;
-  border-radius: 6px;
+  padding: 3px 0 5px;
+  border-radius: 8px 8px 0 0;
 }
 
 .grid td {
   text-align: center;
-  padding: 7px 0;
-  border-radius: 8px;
+  padding: 2px;
   font-variant-numeric: tabular-nums;
 }
 
+.grid tbody tr:last-child td {
+  border-radius: 0 0 8px 8px;
+}
+
+/* the number's box, which carries the holiday, both-free and today marks */
+.grid td > span {
+  display: block;
+  padding: 5px 0;
+  border-radius: 6px;
+}
+
 main.year .grid td {
-  padding: 4px 0;
   font-size: 14px;
+}
+
+main.year .grid td > span {
+  padding: 2px 0;
 }
 
 /* the first holiday set: text color */
@@ -229,17 +244,20 @@ main.year .grid td {
   color: var(--weekend);
 }
 
-/* the second holiday set: background */
-.sh {
-  background: var(--sec-holiday-bg);
-}
-
+/* the second holiday set: background. The weekend tint is on the cell (a band down the
+   column), a holiday on the number's box, on top of the band. */
 .sw {
   background: var(--sec-weekend-bg);
 }
 
-/* both sides free: replaces the second set's background, after it so that it wins */
-.both {
+.grid td.sh > span,
+.swatch.sh {
+  background: var(--sec-holiday-bg);
+}
+
+/* both sides free: replaces the second set's holiday background, after it so that it wins */
+.grid td.both > span,
+.swatch.both {
   background: var(--shared-bg);
 }
 
@@ -247,7 +265,7 @@ main.year .grid td {
   color: var(--weekend);
 }
 
-.grid td.today {
+.grid td.today > span {
   outline: 2px solid var(--today-ring);
   outline-offset: -2px;
   font-weight: 800;

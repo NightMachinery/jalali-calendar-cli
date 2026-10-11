@@ -14,11 +14,12 @@ def test_month_cells_carry_roles():
     model = build_month(GREGORIAN, LmuSource(), IranSource(), 2026, 6)
     html = month_html(model, "lmu-iran")
     assert 'data-start="2026-06-01" data-end="2026-06-30"' in html
-    assert '<td class="ph sh both">4</td>' in html
-    assert '<td class="sh">5</td>' in html
-    assert '<td class="sw">11</td>' in html
-    assert '<td class="sh">24</td>' in html
-    assert '<td class="pw">6</td>' in html
+    #: Jun 4 and 5 are a Thursday and a Friday: in the Iranian weekend columns
+    assert '<td class="ph sh sw both"><span>4</span></td>' in html
+    assert '<td class="sh sw"><span>5</span></td>' in html
+    assert '<td class="sw"><span>11</span></td>' in html
+    assert '<td class="sh"><span>24</span></td>' in html
+    assert '<td class="pw"><span>6</span></td>' in html
     assert '<span class="native">14 Khordad</span>' in html
 
 

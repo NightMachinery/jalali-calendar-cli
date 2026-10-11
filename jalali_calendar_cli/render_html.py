@@ -5,6 +5,9 @@
 #: - `ph`: primary holiday, `pw`: primary weekend
 #: - `sh`: secondary holiday, `sw`: secondary weekend
 #: - `both`: both sides are free
+#:
+#: The weekend tint (`sw`) is the cell's own background, so that a weekend column is one
+#: unbroken band; the other backgrounds go on the number's box inside the cell, on top.
 ##
 import datetime
 from html import escape
@@ -20,7 +23,7 @@ def cell_classes(cell) -> str:
         classes.append("pw")
     if cell.secondary_holiday:
         classes.append("sh")
-    elif cell.secondary_weekend:
+    if cell.secondary_weekend:
         classes.append("sw")
     if cell.both_free:
         classes.append("both")
@@ -62,7 +65,7 @@ def month_html(model: MonthModel, view_id: str) -> str:
 
     out.extend(blank(column) for column in range(model.first_column))
     for cell in model.cells:
-        out.append(f"<td{_class_attr(cell_classes(cell))}>{cell.day}</td>")
+        out.append(f"<td{_class_attr(cell_classes(cell))}><span>{cell.day}</span></td>")
         if cell.column == 6 and cell is not model.cells[-1]:
             out.append("</tr><tr>")
     last_column = model.cells[-1].column
