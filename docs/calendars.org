@@ -152,6 +152,16 @@ from =--bg= whenever the theme changes, so the installed app's title bar follows
 switch. The manifest link carries =crossorigin="use-credentials"=, so that it still loads
 if the page is put behind a login.
 
+=sw.js= keeps the page usable offline, which is most of the point of installing a
+calendar on a phone. It is network first: online, every request goes to the server as if
+the worker were not there (so a redeploy shows on the next open, with the server's
+=no-cache= and ETag doing their usual job), and a copy is kept; offline, or when the server
+has not answered within 3 s, the last copy is served. Cache first was rejected because it
+shows the previous deploy until a second open. Copies are keyed without the query and
+fragment, so =app.js?v=<hash>= replaces the old copy instead of piling up. The worker is
+static (one cache name, no version), so generation stays deterministic; its file list must
+include every file the page loads, which a test checks for the icons.
+
 The icons in [[file:../jalali_calendar_cli/web/][web/]] are copied as they are. The PNGs are renders of =icon.svg= (rounded,
 for the browser tab and desktop) and =icon-maskable.svg= (full bleed, with the sheet inside
 the central safe circle, for Android's masks and iOS), redone after editing either with:

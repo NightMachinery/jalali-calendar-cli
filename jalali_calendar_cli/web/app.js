@@ -371,4 +371,7 @@
   window.addEventListener("resize", hideTip);
 
   render();
+
+  // Offline copies, for the installed app (sw.js). Not available on file:// or plain HTTP.
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
 })();

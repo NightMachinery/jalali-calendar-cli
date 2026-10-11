@@ -153,7 +153,13 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
 </body>
 </html>
 """
-    files = {"index.html": index, "theme.css": css, "app.js": js, "manifest.webmanifest": web_manifest()}
+    files = {
+        "index.html": index,
+        "theme.css": css,
+        "app.js": js,
+        "manifest.webmanifest": web_manifest(),
+        "sw.js": (WEB_DIR / "sw.js").read_text(),
+    }
     files.update({name: (WEB_DIR / name).read_bytes() for name in ICON_FILES})
     return files
 
@@ -177,7 +183,7 @@ def main(argv: Optional[list] = None) -> None:
     parser.add_argument(
         "--out",
         required=True,
-        help="directory to write the page to: index.html, app.js, theme.css, the web app manifest and icons",
+        help="directory to write the page to: index.html, app.js, theme.css, the web app manifest, icons and sw.js",
     )
     parser.add_argument(
         "--from-year",

@@ -5,7 +5,7 @@ import re
 from html import unescape
 
 from jalali_calendar_cli.calendars import GREGORIAN
-from jalali_calendar_cli.html_page import build_page, main
+from jalali_calendar_cli.html_page import ICON_FILES, build_page, main
 from jalali_calendar_cli.model import build_month
 from jalali_calendar_cli.render_html import month_html
 from jalali_calendar_cli.sources.iran import IranSource
@@ -125,3 +125,12 @@ def test_page_is_installable():
         assert int.from_bytes(png[16:20], "big") == int.from_bytes(png[20:24], "big") == size
     assert files["apple-touch-icon.png"][:4] == b"\x89PNG"
     assert "icon.svg" in files
+
+
+def test_page_works_offline():
+    files = build_page({"lmu": LmuSource(), "iran": IranSource()}, 2026, 2026)
+    assert 'navigator.serviceWorker.register("sw.js")' in files["app.js"]
+    #: the worker keeps a copy of everything the page loads
+    cached = re.search(r"var FILES = \[(.*?)\];", files["sw.js"], re.S).group(1)
+    for name in ["./", "theme.css", "app.js", "manifest.webmanifest", *ICON_FILES]:
+        assert f'"{name}"' in cached
