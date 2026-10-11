@@ -73,8 +73,8 @@ def short_hash(text: str) -> str:
 def web_manifest() -> str:
     #: relative URLs: the page is served under a subpath, and from any --out directory
     manifest = {
-        "name": "Holidays",
-        "short_name": "Holidays",
+        "name": "Calendar",
+        "short_name": "Calendar",
         "description": "LMU days off and Iranian holidays, alone or overlaid on one grid.",
         "start_url": "./",
         "scope": "./",
@@ -113,13 +113,13 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Holidays</title>
+<title>Calendar</title>
 <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="{THEME_COLOR}">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Holidays">
+<meta name="apple-mobile-web-app-title" content="Calendar">
 <link rel="stylesheet" href="theme.css?v={short_hash(css)}">
 <script>try{{var t=localStorage.getItem("cal-theme");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 </head>
