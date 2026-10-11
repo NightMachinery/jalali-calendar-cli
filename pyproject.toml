@@ -11,6 +11,9 @@ packages = [{include = "jalali_calendar_cli"}]
 jcal = 'jalali_calendar_cli.jalali_calendar:main'
 jalali-calendar = 'jalali_calendar_cli.jalali_calendar:main'
 jcal-all = 'jalali_calendar_cli.commands:jcal_all'
+gcal = 'jalali_calendar_cli.commands:gcal'
+gcal-lmu = 'jalali_calendar_cli.commands:gcal_lmu'
+gcal-lmu-all = 'jalali_calendar_cli.commands:gcal_lmu_all'
 
 
 [tool.poetry.dependencies]

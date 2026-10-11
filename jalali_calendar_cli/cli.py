@@ -166,7 +166,26 @@ def make_source(name: str, args):
             fallback=args.holidays_fallback,
         )
 
+    if name == "lmu":
+        from .sources.lmu import LmuSource
+
+        return LmuSource()
+
     raise ValueError(f"unknown holiday source: {name}")
+
+
+SOURCE_NAMES = ["iran", "lmu"]
+
+
+def parse_sources(text: str):
+    """"lmu,iran" to `(primary, secondary)`; the secondary is optional."""
+    names = [name.strip().lower() for name in text.split(",") if name.strip()]
+    if not 1 <= len(names) <= 2:
+        raise argparse.ArgumentTypeError("give one or two holiday sources, e.g. lmu or lmu,iran")
+    for name in names:
+        if name not in SOURCE_NAMES:
+            raise argparse.ArgumentTypeError(f"unknown holiday source: {name!r} (known: {', '.join(SOURCE_NAMES)})")
+    return names[0], (names[1] if len(names) == 2 else None)
 
 
 @dataclass
@@ -176,7 +195,7 @@ class View:
     secondary: Optional[str] = None
 
 
-def run_month_view(view: View, argv=None, prog=None, description=None) -> None:
+def run_month_view(view: View, argv=None, prog=None, description=None, sources_option=False) -> None:
     parser = argparse.ArgumentParser(prog=prog, description=description)
 
     ##
@@ -202,10 +221,20 @@ def run_month_view(view: View, argv=None, prog=None, description=None) -> None:
 
     add_display_args(parser)
     add_source_args(parser)
+    if sources_option:
+        default_sources = ",".join(filter(None, [view.primary, view.secondary]))
+        parser.add_argument(
+            "--sources",
+            type=parse_sources,
+            default=default_sources,
+            help=f"the holiday set to show, optionally followed by a second one to overlay, e.g. lmu,iran (known: {', '.join(SOURCE_NAMES)}; default: {default_sources})",
+        )
 
     args = parser.parse_args(argv)
     opts = display_options_from_args(args)
 
+    if sources_option:
+        view = View(view.calendar, *args.sources)
     primary = make_source(view.primary, args)
     secondary = make_source(view.secondary, args) if view.secondary else None
 
