@@ -36,7 +36,9 @@ Each command is a grid calendar plus one or two sources
 - the =-all= variants: the same, as a year view
   ([[file:../jalali_calendar_cli/year_view.py][year_view.py]]), which replaced
   =jcal_all.pl= and renders all twelve months in one process. The year views leave out
-  the holiday list unless =--footnotes= is given, so that a year fits a terminal.
+  the holiday list unless =--footnotes= is given, and put the other calendar's months on
+  the title line, abbreviated and without years (=2026 March · Esf–Far=), so that a year
+  fits a terminal. A title that would not fit the month's width keeps two lines.
 - =jcal-html=: all four views as a static page
   ([[file:../jalali_calendar_cli/html_page.py][html_page.py]]).
 

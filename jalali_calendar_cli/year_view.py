@@ -27,7 +27,8 @@ def render_year(
     footnotes: bool = False,
 ) -> str:
     #: The months themselves never carry footnotes; the year's list goes at the end.
-    grid_opts = DisplayOptions(**{**opts.__dict__, "footnotes": False})
+    #: Titles go on one line, so that four rows of months fit a terminal.
+    grid_opts = DisplayOptions(**{**opts.__dict__, "footnotes": False, "one_line_title": True})
 
     out = []
     rows = [models[i : i + months_per_row] for i in range(0, len(models), months_per_row)]

@@ -58,6 +58,8 @@ class MonthModel:
     title: str
     #: the other calendar's span, when a secondary source is shown
     subtitle: Optional[str]
+    #: the same, abbreviated and without years, for a title on one line
+    short_subtitle: Optional[str]
     weekday_labels: List[WeekdayLabel]
     first_column: int
     cells: List[Cell]
@@ -128,12 +130,14 @@ def build_month(calendar, primary, secondary, year: int, month: int) -> MonthMod
             )
 
     subtitle = secondary.calendar.span(start, end) if overlay else None
+    short_subtitle = secondary.calendar.short_span(start, end) if overlay else None
 
     return MonthModel(
         year=year,
         month=month,
         title=calendar.title(year, month),
         subtitle=subtitle,
+        short_subtitle=short_subtitle,
         weekday_labels=labels,
         first_column=first_column,
         cells=cells,

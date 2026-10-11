@@ -124,3 +124,11 @@ def test_secondary_weekend_columns_are_unbroken():
     assert strip_ansi(first_row) == plain[3]
     assert strip_ansi(last_row).rstrip() == plain[8]
 
+
+def test_year_view_titles_take_one_line():
+    out = run(gcal_lmu_iran_all, ["2026", "--color", "never"])
+    lines = out.split("\n")
+    assert "2026 January · Dey–Bah" in lines[0]
+    assert "2026 March · Esf–Far" in lines[0]
+    assert lines[1].split() == ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] * 3
+    assert "Holidays:" not in out

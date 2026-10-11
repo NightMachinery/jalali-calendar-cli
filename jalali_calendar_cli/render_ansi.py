@@ -108,6 +108,8 @@ class DisplayOptions:
     indentation: int = 5
     line_prefix: str = " "
     footnotes: bool = True
+    #: put the other calendar's span on the title line, when it fits
+    one_line_title: bool = False
 
 
 def resolve_palette(opts: DisplayOptions) -> Dict[str, str]:
@@ -232,9 +234,19 @@ def render_grid(
     width = len(headers_weekdays_plain)
 
     headers = ""
-    headers += f"{bold_ansi}{p['header']}{center_justify(model.title, width)}{reset_color}\n"
-    if model.subtitle:
-        headers += f"{p['footnote']}{center_justify(model.subtitle, width)}{reset_color}\n"
+    one_line = f"{model.title} · {model.short_subtitle}" if model.short_subtitle else None
+    if opts.one_line_title and one_line and len(one_line) <= width:
+        #: centered as a whole, the span in the subtitle's color
+        line = center_justify(one_line, width)
+        pad = line[: len(line) - len(line.lstrip(" "))]
+        headers += (
+            f"{pad}{bold_ansi}{p['header']}{model.title}{reset_color}"
+            f"{p['footnote']} · {model.short_subtitle}{reset_color}{line[len(pad) + len(one_line):]}\n"
+        )
+    else:
+        headers += f"{bold_ansi}{p['header']}{center_justify(model.title, width)}{reset_color}\n"
+        if model.subtitle:
+            headers += f"{p['footnote']}{center_justify(model.subtitle, width)}{reset_color}\n"
     headers += f"{bold_ansi}{headers_weekdays}{reset_color}"
 
     footnotes = "\n".join(format_footnote(f) for f in model.footnotes)

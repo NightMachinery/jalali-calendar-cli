@@ -67,6 +67,13 @@ def _span(first: Tuple[int, str], last: Tuple[int, str]) -> str:
     return f"{first_month} {first_year}–{last_month} {last_year}"
 
 
+def _short_span(first: str, last: str) -> str:
+    """Abbreviated month names to "Meh–Aba", or "Meh" for a single month."""
+    if first == last:
+        return first[:3]
+    return f"{first[:3]}–{last[:3]}"
+
+
 class JalaliCalendar:
     name = "jalali"
     #: Saturday first
@@ -101,6 +108,10 @@ class JalaliCalendar:
         y1, m1, _ = self.from_gregorian(start)
         y2, m2, _ = self.from_gregorian(end)
         return _span((y1, jmonth_name(m1)), (y2, jmonth_name(m2)))
+
+    def short_span(self, start: datetime.date, end: datetime.date) -> str:
+        """`span` with abbreviated names and no years, for one-line titles."""
+        return _short_span(jmonth_name(self.from_gregorian(start)[1]), jmonth_name(self.from_gregorian(end)[1]))
 
     def today(self) -> Tuple[int, int]:
         now = jdatetime.date.today()
@@ -138,6 +149,9 @@ class GregorianCalendar:
             (start.year, self.month_name(start.month)),
             (end.year, self.month_name(end.month)),
         )
+
+    def short_span(self, start: datetime.date, end: datetime.date) -> str:
+        return _short_span(self.month_name(start.month), self.month_name(end.month))
 
     def today(self) -> Tuple[int, int]:
         now = datetime.date.today()

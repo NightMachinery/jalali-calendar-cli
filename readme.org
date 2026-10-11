@@ -264,7 +264,7 @@ In color, each set has its own channel:
 
 In the overlay views today is bold and underlined rather than highlighted, so that the background always means the second set.
 
-A second title line gives the other calendar's months, and the footnotes are tagged with their set. Entries of the second set carry their date in their own calendar:
+A second title line gives the other calendar's months (in the year views it shares the title line, abbreviated, as in =2026 March · Esf–Far=), and the footnotes are tagged with their set. Entries of the second set carry their date in their own calendar:
 
 #+begin_example bash
 gcal-lmu-iran 6 2026 --color never
