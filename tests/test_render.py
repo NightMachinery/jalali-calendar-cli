@@ -35,6 +35,6 @@ def test_today_color_override_is_applied():
 def test_month_without_holidays_has_no_empty_holidays_block(tmp_path):
     empty = tmp_path / "empty.json"
     empty.write_text("{}")
-    model = build_month(JALALI, IranSource(holidays_json_path=str(empty)), None, 1402, 7)
+    model = build_month(JALALI, IranSource(holidays_json_path=str(empty), fallback=False), None, 1402, 7)
     out = format_month(model, DisplayOptions())
     assert "Holidays:" not in out

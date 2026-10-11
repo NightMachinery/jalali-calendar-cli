@@ -143,6 +143,12 @@ def add_source_args(parser):
         help="path to JSON file containing Iranian holiday data (default: the bundled data, or $JALALI_HOLIDAYS_JSON_PATH)",
     )
     group.add_argument(
+        "--holidays-fallback",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="for years missing from the holidays JSON, compute Iranian holidays with the `holidays` package (lunar dates are estimates)",
+    )
+    group.add_argument(
         "--iran-weekend",
         type=parse_weekdays,
         default="thu,fri",
@@ -157,6 +163,7 @@ def make_source(name: str, args):
         return IranSource(
             holidays_json_path=args.holidays_json_path,
             weekend=args.iran_weekend,
+            fallback=args.holidays_fallback,
         )
 
     raise ValueError(f"unknown holiday source: {name}")

@@ -1,5 +1,9 @@
 ##
-#: Iranian official holidays, from the bundled (or user-supplied) holidays JSON.
+#: Iranian official holidays.
+#:
+#: Years covered by the holidays JSON (bundled, or user-supplied) come from it: it is copied
+#: from the published official calendar. Other years are computed by the `holidays`
+#: package, whose Islamic (lunar) dates are estimates and are marked "(estimated)".
 ##
 import datetime
 import json
@@ -30,9 +34,10 @@ class IranSource:
     tag = "IR"
     calendar = JALALI
 
-    def __init__(self, holidays_json_path=None, weekend=DEFAULT_WEEKEND):
+    def __init__(self, holidays_json_path=None, weekend=DEFAULT_WEEKEND, fallback=True):
         self.holidays_json_path = holidays_json_path or default_holidays_json_path()
         self.weekend = frozenset(weekend)
+        self.fallback = fallback
         self._data = None
 
     @property
@@ -43,11 +48,26 @@ class IranSource:
         return self._data
 
     def jalali_year_events(self, year: int) -> Dict[datetime.date, str]:
+        if str(year) not in self.data:
+            return self.computed_year_events(year) if self.fallback else dict()
+
         events = dict()
-        for item in self.data.get(str(year), []):
+        for item in self.data[str(year)]:
             date = jdatetime.date(year, item["month"], item["day"]).togregorian()
             events[date] = item["event"]
         return events
+
+    def computed_year_events(self, year: int) -> Dict[datetime.date, str]:
+        #: imported lazily: it costs ~65 ms, and covered years never need it
+        from holidays.countries.iran import Iran
+
+        #: A Jalali year starts in March, so it spans two Gregorian years.
+        computed = Iran(years=[year + 621, year + 622], language="en_US")
+        return {
+            date: name
+            for date, name in sorted(computed.items())
+            if JALALI.from_gregorian(date)[0] == year
+        }
 
     def events(self, start: datetime.date, end: datetime.date) -> Dict[datetime.date, str]:
         first_year = JALALI.from_gregorian(start)[0]

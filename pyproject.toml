@@ -17,6 +17,7 @@ jcal-all = 'jalali_calendar_cli.commands:jcal_all'
 python = "^3.10"
 jdatetime = "^4.1.1"
 colorama = "^0.4.6"
+holidays = ">=0.106"
 
 
 [tool.poetry.group.dev.dependencies]
