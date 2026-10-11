@@ -1,0 +1,53 @@
+import pathlib
+import subprocess
+import sys
+
+import pytest
+
+GOLDEN_DIR = pathlib.Path(__file__).parent / "golden"
+
+#: Each golden file was captured from `jcal` before the renderer refactor.
+#: None of these months contain "today", so the output is date-independent.
+CASES = {
+    "jcal_7_1402.txt": ["7", "1402", "--color", "never"],
+    "jcal_12_1402.txt": ["12", "1402", "--color", "never"],
+    "jcal_1_1405.txt": ["1", "1405", "--color", "never"],
+    "jcal_12_1405.txt": ["12", "1405", "--color", "never"],
+    "jcal_1_1405_compact.txt": [
+        "1",
+        "1405",
+        "--color",
+        "never",
+        "--no-footnotes",
+        "--indentation",
+        "4",
+        "--line-prefix",
+        "",
+    ],
+    "jcal_7_1402_ansi.txt": ["7", "1402", "--color", "always"],
+    "jcal_7_1402_truecolor_dark.txt": [
+        "7",
+        "1402",
+        "--color",
+        "always",
+        "--true-color",
+        "--color-preset",
+        "dark",
+    ],
+}
+
+
+def run_module(module, args):
+    return subprocess.run(
+        [sys.executable, "-m", module, *args],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+
+
+@pytest.mark.parametrize("golden_name", sorted(CASES))
+def test_jcal_matches_golden(golden_name):
+    expected = (GOLDEN_DIR / golden_name).read_text()
+    actual = run_module("jalali_calendar_cli.jalali_calendar", CASES[golden_name])
+    assert actual == expected
