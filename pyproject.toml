@@ -14,6 +14,10 @@ jcal-all = 'jalali_calendar_cli.commands:jcal_all'
 gcal = 'jalali_calendar_cli.commands:gcal'
 gcal-lmu = 'jalali_calendar_cli.commands:gcal_lmu'
 gcal-lmu-all = 'jalali_calendar_cli.commands:gcal_lmu_all'
+gcal-lmu-iran = 'jalali_calendar_cli.commands:gcal_lmu_iran'
+gcal-lmu-iran-all = 'jalali_calendar_cli.commands:gcal_lmu_iran_all'
+jcal-iran-lmu = 'jalali_calendar_cli.commands:jcal_iran_lmu'
+jcal-iran-lmu-all = 'jalali_calendar_cli.commands:jcal_iran_lmu_all'
 
 
 [tool.poetry.dependencies]
