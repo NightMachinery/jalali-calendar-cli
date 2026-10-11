@@ -1,6 +1,6 @@
 #+TITLE: jalali-calendar-cli
 
-Jalali (Shamsi) calendar in your terminal, with holidays
+Jalali (Shamsi) and Gregorian calendars in your terminal, with holidays: Iranian official holidays, the days off of LMU Munich staff, or both overlaid on one grid. There is also a static HTML version.
 
 * Install
 #+begin_example bash
@@ -8,6 +8,18 @@ pip install -U jalali-calendar-cli
 #+end_example
 
 This requires Python ≥3.10.
+
+The package installs these commands:
+
+- =jcal= (alias =jalali-calendar=): a Jalali month with Iranian holidays.
+- =jcal-all=: all months of a Jalali year.
+- =gcal-lmu= and =gcal-lmu-all=: a Gregorian month, or year, with LMU Munich days off.
+- =gcal=: a Gregorian month with the holiday set(s) chosen by =--sources=.
+- =gcal-lmu-iran= and =gcal-lmu-iran-all=: LMU days off on a Gregorian grid, with Iranian holidays overlaid.
+- =jcal-iran-lmu= and =jcal-iran-lmu-all=: the mirror image, Iranian holidays on a Jalali grid with LMU days off overlaid.
+- =jcal-html=: writes a static HTML page with all of the above.
+
+See [[file:docs/calendars.org][docs/calendars.org]] for where the holiday data comes from and how the code is organized.
 
 * Usage
 # #+ATTR_HTML: :width 884
@@ -20,21 +32,27 @@ This requires Python ≥3.10.
 
 
 #+begin_example bash
-usage: jalali-calendar [-h] [--color {auto,always,never}]
-                       [--true-color | --no-true-color]
-                       [--footnotes | --no-footnotes]
-                       [--indentation INDENTATION]
-                       [--holidays-json-path HOLIDAYS_JSON_PATH]
-                       [--color-preset {light,dark}]
-                       [--weekend-true-color WEEKEND_TRUE_COLOR]
-                       [--holiday-true-color HOLIDAY_TRUE_COLOR]
-                       [--header-true-color HEADER_TRUE_COLOR]
-                       [--today-true-color TODAY_TRUE_COLOR]
-                       [--weekend-color WEEKEND_COLOR]
-                       [--holiday-color HOLIDAY_COLOR]
-                       [--header-color HEADER_COLOR]
-                       [--today-color TODAY_COLOR]
-                       [month] [year]
+usage: jcal [-h] [--color {auto,always,never}]
+            [--true-color | --no-true-color] [--footnotes | --no-footnotes]
+            [--indentation INDENTATION] [--line-prefix LINE_PREFIX]
+            [--color-preset {light,dark}]
+            [--weekend-true-color WEEKEND_TRUE_COLOR]
+            [--weekend-color WEEKEND_COLOR]
+            [--holiday-true-color HOLIDAY_TRUE_COLOR]
+            [--holiday-color HOLIDAY_COLOR]
+            [--header-true-color HEADER_TRUE_COLOR]
+            [--header-color HEADER_COLOR]
+            [--today-true-color TODAY_TRUE_COLOR] [--today-color TODAY_COLOR]
+            [--shared-true-color SHARED_TRUE_COLOR]
+            [--shared-color SHARED_COLOR]
+            [--secondary-holiday-true-color SECONDARY_HOLIDAY_TRUE_COLOR]
+            [--secondary-holiday-color SECONDARY_HOLIDAY_COLOR]
+            [--secondary-weekend-true-color SECONDARY_WEEKEND_TRUE_COLOR]
+            [--secondary-weekend-color SECONDARY_WEEKEND_COLOR]
+            [--holidays-json-path HOLIDAYS_JSON_PATH]
+            [--holidays-fallback | --no-holidays-fallback]
+            [--iran-weekend IRAN_WEEKEND]
+            [month] [year]
 
 positional arguments:
   month                 month in Jalali calendar (default: current month)
@@ -45,13 +63,14 @@ options:
   --color {auto,always,never}
                         colorize the output
   --true-color, --no-true-color
-                        enable true color support for output (default: False)
+                        enable true color support for output
   --footnotes, --no-footnotes
-                        show footnotes in the output (default: True)
+                        show footnotes in the output
   --indentation INDENTATION
                         number of spaces for indentation (default: 5)
-  --holidays-json-path HOLIDAYS_JSON_PATH
-                        path to JSON file containing holiday data
+  --line-prefix LINE_PREFIX
+                        a prefix that is added to all lines of the output
+                        (default: ' ')
   --color-preset {light,dark}
                         color preset for the calendar output (default: light)
 
@@ -63,7 +82,17 @@ options:
   --header-true-color HEADER_TRUE_COLOR
                         RGB values for header color in 24-bit true color
   --today-true-color TODAY_TRUE_COLOR
-                        RGB values for the current day's color
+                        RGB values for the current day's color in 24-bit true
+                        color
+  --shared-true-color SHARED_TRUE_COLOR
+                        RGB values for days on which both shown holiday sets
+                        are free in 24-bit true color
+  --secondary-holiday-true-color SECONDARY_HOLIDAY_TRUE_COLOR
+                        RGB values for the background of the second holiday
+                        set's holidays in 24-bit true color
+  --secondary-weekend-true-color SECONDARY_WEEKEND_TRUE_COLOR
+                        RGB values for the background of the second holiday
+                        set's weekend in 24-bit true color
 
 colorama 256 color options:
   --weekend-color WEEKEND_COLOR
@@ -73,7 +102,29 @@ colorama 256 color options:
   --header-color HEADER_COLOR
                         colorama color name for header color
   --today-color TODAY_COLOR
-                        colorama color name for the current day
+                        colorama color name for the current day's color
+  --shared-color SHARED_COLOR
+                        colorama color name for days on which both shown
+                        holiday sets are free
+  --secondary-holiday-color SECONDARY_HOLIDAY_COLOR
+                        colorama color name for the background of the second
+                        holiday set's holidays
+  --secondary-weekend-color SECONDARY_WEEKEND_COLOR
+                        colorama color name for the background of the second
+                        holiday set's weekend
+
+holiday data:
+  --holidays-json-path HOLIDAYS_JSON_PATH
+                        path to JSON file containing Iranian holiday data
+                        (default: the bundled data, or
+                        $JALALI_HOLIDAYS_JSON_PATH)
+  --holidays-fallback, --no-holidays-fallback
+                        for years missing from the holidays JSON, compute
+                        Iranian holidays with the `holidays` package (lunar
+                        dates are estimates)
+  --iran-weekend IRAN_WEEKEND
+                        comma-separated weekdays that are the weekend in Iran
+                        (default: thu,fri; use 'fri' for the official reading)
 #+end_example
 
 ** Examples
@@ -177,6 +228,70 @@ jcal-all 1402 --outer-indent 2 --horizontal-indent 1
   30
 #+end_example
 
+** Gregorian Calendar with LMU Munich Days Off
+=gcal-lmu= shows a Gregorian month, weeks starting on Monday, with the days off of LMU Munich staff: Bavarian public holidays (including Assumption Day, which applies in Munich) plus December 24 and 31, which TV-L gives off.
+
+#+begin_example bash
+gcal-lmu 12 2026
+#+end_example
+
+#+begin_example
+           2026 December
+ Mon  Tue  Wed  Thu  Fri  Sat  Sun
+        1    2    3    4    5    6
+   7    8    9   10   11   12   13
+  14   15   16   17   18   19   20
+  21   22   23   24   25   26   27
+  28   29   30   31
+
+ Holidays:
+   24: Christmas Eve (TV-L)
+   25: Christmas Day
+   26: Second Day of Christmas
+   31: New Year's Eve (TV-L)
+#+end_example
+
+=gcal-lmu-all 2026= prints the whole year with a list of its days off. =gcal --sources lmu= is the same as =gcal-lmu=; it is where more holiday sets will go.
+
+** Two Holiday Sets on One Grid
+=gcal-lmu-iran= draws LMU days off on a Gregorian grid and overlays Iranian holidays; =jcal-iran-lmu= draws Iranian holidays on a Jalali grid and overlays LMU days off. Both have an =-all= year view.
+
+In color, each set has its own channel:
+- *text color* is the first set: red for a holiday, magenta for its weekend;
+- *background* is the second set: a strong tint for a holiday, a faint tint for its weekend (also on the weekday labels);
+- *bold gold text* marks a day on which both sides are free, whether by holiday or by weekend.
+
+In the overlay views today is bold and underlined rather than highlighted, so that the background always means the second set.
+
+A second title line gives the other calendar's months, and the footnotes are tagged with their set. Entries of the second set carry their date in their own calendar:
+
+#+begin_example bash
+gcal-lmu-iran 6 2026 --color never
+#+end_example
+
+#+begin_example
+             2026 June
+         Khordad–Tir 1405
+ Mon  Tue  Wed  Thu  Fri  Sat  Sun
+   1    2    3    4    5    6    7
+   8    9   10   11   12   13   14
+  15   16   17   18   19   20   21
+  22   23   24   25   26   27   28
+  29   30
+
+ Holidays:
+    4: LMU  Corpus Christi
+    4: IR   Eid Saeed Ghadir Khumm - Demise of Imam Khomeini (14 Khordad)
+    5: IR   Revolt of 15 Khordad (15 Khordad)
+   24: IR   Tasu'a Hosseini (3 Tir)
+   25: IR   Ashura Hosseini (4 Tir)
+#+end_example
+
+The Iranian weekend is Thursday and Friday by default; =--iran-weekend fri= gives the official reading, where only Friday is the weekend.
+
+** HTML Page
+=jcal-html --out DIR= writes =index.html=, =theme.css= and =app.js= to =DIR=: a static page, built for phones, with the four views (LMU, LMU + Iran, Iran, Iran + LMU) for last year through two years ahead (=--from-year=, =--to-year=). It uses the same colors as the terminal, has a month and a year mode, marks today in the browser, and has a manual light/dark switch. Running it again on the same inputs rewrites nothing. =site/holidays/refresh.sh= builds it from a checkout of this repository.
+
 ** =colorama= Colors
 These colors are defined by your terminal theme. Use true (24-bit) colors if you want to specify colors in RGB.
 
@@ -204,4 +319,8 @@ YELLOW
 The default data dictionary is [[https://github.com/NightMachinery/jalali-calendar-cli/blob/master/jalali_calendar_cli/holidays.json][here]]. I plan to keep the data up-to-date for the upcoming years, but you can always supply your own.
 
 The bundled holiday data currently covers years 1402 through 1405. The holiday data of previous years (≤1401) has not been added.
+
+For years the data does not cover, the Iranian holidays are computed by the [[https://pypi.org/project/holidays/][holidays]] package. Its Islamic (lunar) dates are estimates, marked "(estimated)", and can be off by a day; =--no-holidays-fallback= turns this off. In every leap year, 30 Esfand is added as a holiday: it is always an official holiday, as part of the 29 Esfand to 4 Farvardin span.
+
+LMU Munich days off come from the =holidays= package as well (Bavaria, with Assumption Day), plus December 24 and 31.
 

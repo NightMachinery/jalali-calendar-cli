@@ -1,0 +1,129 @@
+#+TITLE: Calendars, holiday sources and views
+
+How the commands are put together, where each holiday comes from, and what is
+deliberately left out.
+
+* Terms
+
+- *Grid calendar*: the calendar whose days are laid out in the grid. Jalali for the
+  =jcal*= commands (Saturday first), Gregorian for the =gcal*= commands (Monday first).
+  See [[file:../jalali_calendar_cli/calendars.py][calendars.py]].
+- *Holiday source*: answers "which days in this Gregorian date range are days off, and
+  what are they called", and says which weekdays are its weekend. Sources are keyed by
+  =datetime.date=, so any source can be drawn on any grid calendar. See
+  [[file:../jalali_calendar_cli/sources/][sources/]].
+- *Primary / secondary source*: a view shows one source, or two. The primary is drawn
+  as holidays always were (text color); the secondary is overlaid (background).
+- *Month model*: everything about one month that a formatter needs, decided once
+  ([[file:../jalali_calendar_cli/model.py][model.py]]): each day's Gregorian date and its
+  roles (primary holiday, primary weekend, secondary holiday, secondary weekend, both
+  free), the weekday labels, the title and subtitle, and the footnotes.
+- *Formatter*: turns a month model into output. There are two:
+  [[file:../jalali_calendar_cli/render_ansi.py][render_ansi.py]] for the terminal and
+  [[file:../jalali_calendar_cli/render_html.py][render_html.py]] for the HTML page. Neither
+  decides anything about holidays, which is what keeps the terminal and the page in
+  agreement.
+
+* The commands
+
+Each command is a grid calendar plus one or two sources
+([[file:../jalali_calendar_cli/commands.py][commands.py]]):
+
+- =jcal=: Jalali grid, Iran.
+- =gcal-lmu=, =gcal --sources lmu=: Gregorian grid, LMU.
+- =gcal-lmu-iran=: Gregorian grid, LMU, with Iran overlaid.
+- =jcal-iran-lmu=: Jalali grid, Iran, with LMU overlaid.
+- the =-all= variants: the same, as a year view
+  ([[file:../jalali_calendar_cli/year_view.py][year_view.py]]), which replaced
+  =jcal_all.pl= and renders all twelve months in one process.
+- =jcal-html=: all four views as a static page
+  ([[file:../jalali_calendar_cli/html_page.py][html_page.py]]).
+
+* Iran
+
+[[file:../jalali_calendar_cli/sources/iran.py][sources/iran.py]].
+
+- Years in [[file:../jalali_calendar_cli/holidays.json][holidays.json]] come from it. It is
+  copied from the published official calendar, and it wins over anything computed.
+- Other years come from the [[https://pypi.org/project/holidays/][holidays]] package
+  (=holidays.Iran=). Its Islamic dates are estimates, marked "(estimated)". Compared with
+  the bundled data for 1402 to 1405 it agreed on every date except Martyrdom of Imam Ali
+  in 1405 (official 12-09, computed 12-10) and the 2023 heat closure (official Aug 2-3,
+  computed Aug 1-2). =--no-holidays-fallback= turns the fallback off.
+- 30 Esfand, which exists only in leap years, is always added: it is an official holiday
+  as part of the 29 Esfand to 4 Farvardin span.
+- The weekend defaults to Thursday and Friday. Officially only Friday is the weekend,
+  but Thursday is off in practice for much of the country, and a law making it official
+  has been pending since 2024. =--iran-weekend fri= gives the official reading.
+- The package is imported only when a year needs it, so =jcal= for a covered year does
+  not pay its ~65 ms import (a test checks this).
+
+* LMU Munich
+
+[[file:../jalali_calendar_cli/sources/lmu.py][sources/lmu.py]]. Days off for LMU staff
+employed under TV-L:
+
+- Bavarian public holidays from the =holidays= package (=Germany(subdiv="BY")=), with its
+  "catholic" category: Assumption Day (Aug 15) is a public holiday only in Bavarian
+  municipalities with a predominantly Catholic population, and Munich is one. Checked
+  against the Bavarian ICS feed at https://ics.tools/Feiertage/bayern.ics for 2026 to
+  2028.
+- December 24 and 31: TV-L § 6 Abs. 3 releases employees from work on these days with
+  continued pay.
+
+Left out on purpose:
+
+- lecture-free days and lecture periods: they are not days off for staff;
+- Shrove Tuesday (Faschingsdienstag): not a day off under TV-L, although some units
+  close at noon;
+- Repentance Day (Buß- und Bettag): a school holiday in Bavaria, not a public holiday.
+
+* Overlay colors
+
+One channel per source, so they can be read independently:
+
+- text color is the primary source: red for a holiday, magenta for its weekend;
+- background is the secondary source: a strong tint for a holiday, a faint tint for its
+  weekend, also on the weekday labels;
+- bold gold text means both sides are free that day, by holiday or by weekend.
+
+Today is marked in a way that leaves both channels alone: bold and underlined in the
+terminal's overlay views, an outline ring on the page. (Single-source terminal views keep
+the old background highlight for today, since nothing else uses the background there.)
+
+The colors are presets in =render_ansi.py= and CSS variables in
+[[file:../jalali_calendar_cli/web/theme.css][web/theme.css]]; every terminal color can be
+overridden with the =--KEY-color= and =--KEY-true-color= options.
+
+* Adding a holiday source
+
+1. Write a class in =sources/= with =tag= (the footnote tag), =label= (the name on the
+   page), =calendar= (its own calendar, for the native dates in footnotes), =weekend=
+   (Python weekdays, Monday is 0) and =events(start, end) -> {date: name}=. Cache per
+   year: the year views and the page ask for each year many times.
+2. Register its name in =make_source= and =SOURCE_NAMES= in
+   [[file:../jalali_calendar_cli/cli.py][cli.py]]. It is then available as
+   =gcal --sources NAME= or =gcal --sources NAME,OTHER=.
+3. Optionally add shortcut commands in =commands.py= and =pyproject.toml=, and a view to
+   =VIEWS= in =html_page.py=.
+
+* The HTML page
+
+=jcal-html --out DIR= pre-renders every month of every view for last year through two
+years ahead. The script ([[file:../jalali_calendar_cli/web/app.js][web/app.js]]) only
+chooses which months to show, marks today from the browser's clock (so a page generated
+months ago is still right about today), and remembers the view and theme in
+=localStorage=. There is no automatic dark mode: the theme is a manual switch.
+
+Generation is deterministic and writes only files whose content changed, so a second run
+reports =unchanged= for all three files (tested). [[file:../site/holidays/refresh.sh][site/holidays/refresh.sh]]
+runs it from a checkout of this repository into its own directory, where the output is
+gitignored.
+
+* Tests
+
+=pytest= from the repository root. The golden files in [[file:../tests/golden/][tests/golden/]]
+were captured before the renderer refactor (the =jcal= months, plain and colored) and
+from the old Perl script (the =jcal-all= years), so they pin the output byte for byte.
+The colored month goldens without =_fri= show the Thursday and Friday weekend; the
+=_fri= ones are the old behavior, reproduced with =--iran-weekend fri=.
