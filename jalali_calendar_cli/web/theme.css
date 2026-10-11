@@ -70,7 +70,8 @@ button {
   cursor: pointer;
 }
 
-button[aria-pressed="true"] {
+button[aria-pressed="true"],
+button[aria-expanded="true"] {
   background: var(--accent);
   border-color: var(--accent);
   color: var(--bg);

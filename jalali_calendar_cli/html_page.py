@@ -101,10 +101,11 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
 <span class="spacer"></span>
 <span class="modes"><button type="button" data-set-mode="month">Month</button><button type="button" data-set-mode="year">Year</button></span>
 <button type="button" id="theme" aria-label="Switch light and dark theme">&#9680;</button>
+<button type="button" id="key-toggle" aria-label="Color key and settings" aria-controls="key" aria-expanded="false">&#9881;&#xFE0E;</button>
 </div>
 </header>
-<!-- not in the sticky header: on a phone it would cover half the screen -->
-<div class="key">
+<!-- not in the sticky header: on a phone it would cover half the screen; collapsed by default -->
+<div class="key" id="key" hidden>
 {"".join(legends)}
 <div class="options">
 <label class="option"><input type="checkbox" id="show-notes"> Holiday list</label>

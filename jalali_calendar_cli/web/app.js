@@ -202,6 +202,20 @@
     }
   });
 
+  // The color key and the checkboxes, collapsed unless opened; remembered.
+  var keyBox = document.getElementById("key");
+  var keyButton = document.getElementById("key-toggle");
+  function applyKey(open) {
+    keyBox.hidden = !open;
+    keyButton.setAttribute("aria-expanded", String(open));
+  }
+  applyKey(load("cal-key") === "1");
+  keyButton.addEventListener("click", function () {
+    var open = keyBox.hidden;
+    applyKey(open);
+    store("cal-key", open ? "1" : "0");
+  });
+
   document.getElementById("theme").addEventListener("click", function () {
     var root = document.documentElement;
     var next = root.dataset.theme === "dark" ? "light" : "dark";

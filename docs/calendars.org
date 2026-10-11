@@ -133,7 +133,8 @@ is one row: 4 on a wide screen, January alone on a phone. There is no automatic 
 
 Only the view buttons and the navigation row are in the sticky header, each kept on one
 line down to phone width; the color key and the checkboxes sit below it and scroll away, so
-that on a phone the header does not cover half the screen.
+that on a phone the header does not cover half the screen. They are collapsed by default; the
+gear button next to the theme switch opens them, and the choice is remembered.
 
 The tooltips keep to the same division of labor. A day with holidays carries them in a
 =data-tip= attribute; for the dates, each month carries =data-other=, where each month of
