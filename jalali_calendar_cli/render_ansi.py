@@ -147,8 +147,26 @@ def render_grid(
     reset_color = p["reset"]
 
     header_indentation_len = indentation - 3
-    blank1 = " " * indentation
-    calendar = [blank1 * model.first_column]
+
+    #: Columns of the second set's weekend are tinted from the header down, including
+    #: the empty cells before the first and after the last day, so they read as columns.
+    tinted_columns = (
+        {col for col, label in enumerate(model.weekday_labels) if label.secondary_weekend}
+        if p["secondary_weekend"]
+        else set()
+    )
+
+    def blank_cell(width, column):
+        if column in tinted_columns:
+            return f"{' ' * (width - 3)}{p['secondary_weekend']}   {reset_color}"
+        return " " * width
+
+    #: The first column is 3 wide, the others `indentation` (separator plus 3); the
+    #: separator before the first day is added after the blanks.
+    leading = [blank_cell(3 if col == 0 else indentation, col) for col in range(model.first_column)]
+    if model.first_column:
+        leading.append(" " * header_indentation_len)
+    calendar = ["".join(leading)]
 
     last_indentation_debt = header_indentation_len
     num_days = len(model.cells)
@@ -195,6 +213,13 @@ def render_grid(
         if cell.column == 6 and day != num_days:
             calendar.append("\n")
             last_indentation_debt = header_indentation_len
+
+    #: the tinted columns after the last day; nothing past the last of them, so plain
+    #: output keeps no trailing spaces
+    last_column = model.cells[-1].column
+    trailing = [col for col in tinted_columns if col > last_column]
+    if trailing:
+        calendar.extend(blank_cell(indentation, col) for col in range(last_column + 1, max(trailing) + 1))
 
     label_sep = " " * header_indentation_len
     headers_weekdays_plain = label_sep.join(label.text for label in model.weekday_labels)

@@ -56,13 +56,17 @@ def month_html(model: MonthModel, view_id: str) -> str:
         out.append(f"<th{_class_attr(label_classes(label))}>{escape(label.text)}</th>")
     out.append("</tr></thead><tbody><tr>")
 
-    out.append("<td></td>" * model.first_column)
+    #: empty cells in the second set's weekend columns are tinted too, as in the terminal
+    def blank(column):
+        return '<td class="sw"></td>' if model.weekday_labels[column].secondary_weekend else "<td></td>"
+
+    out.extend(blank(column) for column in range(model.first_column))
     for cell in model.cells:
         out.append(f"<td{_class_attr(cell_classes(cell))}>{cell.day}</td>")
         if cell.column == 6 and cell is not model.cells[-1]:
             out.append("</tr><tr>")
     last_column = model.cells[-1].column
-    out.append("<td></td>" * (6 - last_column))
+    out.extend(blank(column) for column in range(last_column + 1, 7))
     out.append("</tr></tbody></table>")
 
     if model.footnotes:

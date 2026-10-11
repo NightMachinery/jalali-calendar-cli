@@ -3,7 +3,7 @@ import datetime
 import io
 
 from jalali_calendar_cli.calendars import GREGORIAN, JALALI
-from jalali_calendar_cli.commands import gcal_lmu_iran, jcal_iran_lmu
+from jalali_calendar_cli.commands import gcal_lmu_iran, gcal_lmu_iran_all, jcal_iran_lmu
 from jalali_calendar_cli.model import build_month
 from jalali_calendar_cli.sources.iran import IranSource
 from jalali_calendar_cli.sources.lmu import LmuSource
@@ -106,3 +106,21 @@ def test_today_keeps_the_secondary_background_in_overlay_views():
     assert f"{SECONDARY_WEEKEND_BG} \x1b[1m\x1b[4m11" in out
     #: today's own background is not used
     assert "\x1b[48;2;255;255;255m" not in out
+
+
+def test_secondary_weekend_columns_are_unbroken():
+    from jalali_calendar_cli.render_ansi import DisplayOptions, format_month, strip_ansi
+
+    #: November 2026 starts on a Sunday and ends on a Monday, so its first and last rows
+    #: have empty Thursday and Friday cells, which are tinted too.
+    model = build_month(GREGORIAN, LmuSource(), IranSource(), 2026, 11)
+    out = format_month(model, DisplayOptions(color=True, true_color=True), today=None)
+    lines = out.split("\n")
+    first_row, last_row = lines[3], lines[8]
+    assert first_row.count(SECONDARY_WEEKEND_BG) == 2
+    assert last_row.count(SECONDARY_WEEKEND_BG) == 2
+    #: the tint does not move anything
+    plain = format_month(model, DisplayOptions(), today=None).split("\n")
+    assert strip_ansi(first_row) == plain[3]
+    assert strip_ansi(last_row).rstrip() == plain[8]
+

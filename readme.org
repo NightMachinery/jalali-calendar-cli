@@ -259,7 +259,7 @@ gcal-lmu 12 2026
 
 In color, each set has its own channel:
 - *text color* is the first set: red for a holiday, magenta for its weekend;
-- *background* is the second set: a strong tint for a holiday, a faint tint for its weekend (also on the weekday labels);
+- *background* is the second set: a strong tint for a holiday, a faint tint for its weekend, which runs down the whole column from the weekday label;
 - *bold gold text* marks a day on which both sides are free, whether by holiday or by weekend.
 
 In the overlay views today is bold and underlined rather than highlighted, so that the background always means the second set.
