@@ -126,10 +126,14 @@ overridden with the =--KEY-color= and =--KEY-true-color= options.
 years ahead. The script ([[file:../jalali_calendar_cli/web/app.js][web/app.js]]) only
 chooses which months to show, marks today from the browser's clock (so a page generated
 months ago is still right about today), shows each day's tooltip, and remembers the view, the theme and the
-checkboxes in =localStorage=: "Show the holiday list" (off by default), and "Also show the
-next month" and "Also show the start of the next year" (on by default). The latter adds as
+checkboxes in =localStorage=: "Holiday list" (off by default), and "Next month" and "Next
+year's start" (on by default). The latter adds as
 many of the next year's months as the year grid has columns at the current width, that
 is one row: 4 on a wide screen, January alone on a phone. There is no automatic dark mode: the theme is a manual switch.
+
+Only the view buttons and the navigation row are in the sticky header, each kept on one
+line down to phone width; the color key and the checkboxes sit below it and scroll away, so
+that on a phone the header does not cover half the screen.
 
 The tooltips keep to the same division of labor. A day with holidays carries them in a
 =data-tip= attribute; for the dates, each month carries =data-other=, where each month of

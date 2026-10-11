@@ -102,13 +102,16 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
 <span class="modes"><button type="button" data-set-mode="month">Month</button><button type="button" data-set-mode="year">Year</button></span>
 <button type="button" id="theme" aria-label="Switch light and dark theme">&#9680;</button>
 </div>
+</header>
+<!-- not in the sticky header: on a phone it would cover half the screen -->
+<div class="key">
 {"".join(legends)}
 <div class="options">
-<label class="option"><input type="checkbox" id="show-notes"> Show the holiday list</label>
-<label class="option" data-mode="month"><input type="checkbox" id="show-next-month"> Also show the next month</label>
-<label class="option" data-mode="year"><input type="checkbox" id="show-next-row"> Also show the start of the next year</label>
+<label class="option"><input type="checkbox" id="show-notes"> Holiday list</label>
+<label class="option" data-mode="month"><input type="checkbox" id="show-next-month"> Next month</label>
+<label class="option" data-mode="year"><input type="checkbox" id="show-next-row"> Next year's start</label>
 </div>
-</header>
+</div>
 <main id="months" class="month">
 {chr(10).join(months)}
 </main>

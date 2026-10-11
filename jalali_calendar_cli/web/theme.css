@@ -76,16 +76,18 @@ button[aria-pressed="true"] {
   color: var(--bg);
 }
 
+/* The sticky header holds only the two rows below, each on one line even on a phone. */
 .views,
 .controls {
   display: flex;
-  flex-wrap: wrap;
   gap: 6px;
   align-items: center;
 }
 
 .views button {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .controls {
@@ -110,26 +112,32 @@ button[aria-pressed="true"] {
   border-left: 0;
 }
 
+/* the color key and the checkboxes, under the header; they scroll away */
+.key {
+  padding: 8px 16px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 14px;
-  margin-top: 8px;
-  font-size: 13px;
+  gap: 4px 12px;
+  font-size: 12px;
   color: var(--muted);
 }
 
 .legend span.item {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 /* a sample day cell, outlined so that it does not read as text */
 .legend .swatch {
   display: inline-block;
-  min-width: 28px;
-  padding: 1px 4px;
+  min-width: 24px;
+  padding: 0 3px;
   text-align: center;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -146,7 +154,7 @@ button[aria-pressed="true"] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 13px;
   color: var(--muted);
   cursor: pointer;
@@ -259,6 +267,32 @@ main.hide-notes /* a day's tooltip, positioned by app.js */
 
 .notes {
   display: none;
+}
+
+/* narrow phones: smaller controls, so that each header row fits on one line */
+@media (max-width: 480px) {
+  header {
+    padding: 8px 12px 6px;
+  }
+
+  .views,
+  .controls {
+    gap: 4px;
+  }
+
+  button {
+    font-size: 14px;
+    min-height: 32px;
+    padding: 4px 8px;
+  }
+
+  .views button {
+    padding: 4px 2px;
+  }
+
+  .key {
+    padding: 6px 12px 0;
+  }
 }
 
 main {
