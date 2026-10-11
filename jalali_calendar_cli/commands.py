@@ -34,7 +34,6 @@ def gcal_lmu_all(argv=None) -> None:
         GCAL_LMU,
         argv=argv,
         description="All months of a Gregorian year, with LMU Munich days off.",
-        footnotes=True,
     )
 
 
@@ -51,7 +50,6 @@ def gcal_lmu_iran_all(argv=None) -> None:
         GCAL_LMU_IRAN,
         argv=argv,
         description="All months of a Gregorian year, with LMU Munich days off overlaid with Iranian holidays.",
-        footnotes=True,
     )
 
 
@@ -68,5 +66,4 @@ def jcal_iran_lmu_all(argv=None) -> None:
         JCAL_IRAN_LMU,
         argv=argv,
         description="All months of a Jalali year, with Iranian holidays overlaid with LMU Munich days off.",
-        footnotes=True,
     )

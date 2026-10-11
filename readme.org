@@ -252,7 +252,7 @@ gcal-lmu 12 2026
    31: New Year's Eve (TV-L)
 #+end_example
 
-=gcal-lmu-all 2026= prints the whole year with a list of its days off. =gcal --sources lmu= is the same as =gcal-lmu=; it is where more holiday sets will go.
+=gcal-lmu-all 2026= prints the whole year; =--footnotes= adds a list of its days off. =gcal --sources lmu= is the same as =gcal-lmu=; it is where more holiday sets will go.
 
 ** Two Holiday Sets on One Grid
 =gcal-lmu-iran= draws LMU days off on a Gregorian grid and overlays Iranian holidays; =jcal-iran-lmu= draws Iranian holidays on a Jalali grid and overlays LMU days off. Both have an =-all= year view.

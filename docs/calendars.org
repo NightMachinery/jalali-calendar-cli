@@ -35,7 +35,8 @@ Each command is a grid calendar plus one or two sources
 - =jcal-iran-lmu=: Jalali grid, Iran, with LMU overlaid.
 - the =-all= variants: the same, as a year view
   ([[file:../jalali_calendar_cli/year_view.py][year_view.py]]), which replaced
-  =jcal_all.pl= and renders all twelve months in one process.
+  =jcal_all.pl= and renders all twelve months in one process. The year views leave out
+  the holiday list unless =--footnotes= is given, so that a year fits a terminal.
 - =jcal-html=: all four views as a static page
   ([[file:../jalali_calendar_cli/html_page.py][html_page.py]]).
 
