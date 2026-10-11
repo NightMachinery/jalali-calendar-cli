@@ -354,13 +354,62 @@
     },
     {
       "row": 25,
+      "dayOfWeek": "Sunday",
+      "month": 12,
+      "day": 10,
+      "event": "Public Holiday (government closure)"
+    },
+    {
+      "row": 26,
+      "dayOfWeek": "Monday",
+      "month": 12,
+      "day": 11,
+      "event": "Public Holiday (government closure)"
+    },
+    {
+      "row": 27,
+      "dayOfWeek": "Tuesday",
+      "month": 12,
+      "day": 12,
+      "event": "Public Holiday (government closure)"
+    },
+    {
+      "row": 28,
+      "dayOfWeek": "Wednesday",
+      "month": 12,
+      "day": 13,
+      "event": "Public Holiday (government closure)"
+    },
+    {
+      "row": 29,
+      "dayOfWeek": "Thursday",
+      "month": 12,
+      "day": 14,
+      "event": "Public Holiday (government closure)"
+    },
+    {
+      "row": 30,
+      "dayOfWeek": "Friday",
+      "month": 12,
+      "day": 15,
+      "event": "Public Holiday (government closure)"
+    },
+    {
+      "row": 31,
+      "dayOfWeek": "Saturday",
+      "month": 12,
+      "day": 16,
+      "event": "Public Holiday (government closure)"
+    },
+    {
+      "row": 32,
       "dayOfWeek": "Wednesday",
       "month": 12,
       "day": 20,
       "event": "Martyrdom of Imam Ali"
     },
     {
-      "row": 26,
+      "row": 33,
       "dayOfWeek": "Friday",
       "month": 12,
       "day": 29,
@@ -666,76 +715,90 @@
     },
     {
       "row": 17,
+      "dayOfWeek": "Wednesday",
+      "month": 5,
+      "day": 11,
+      "event": "Public Holiday (government closure)"
+    },
+    {
+      "row": 18,
+      "dayOfWeek": "Thursday",
+      "month": 5,
+      "day": 12,
+      "event": "Public Holiday (government closure)"
+    },
+    {
+      "row": 19,
       "dayOfWeek": "Thursday",
       "month": 6,
       "day": 15,
       "event": "Arba'een"
     },
     {
-      "row": 18,
+      "row": 20,
       "dayOfWeek": "Friday",
       "month": 6,
       "day": 23,
       "event": "Demise of Prophet Muhammad and Martyrdom of Imam Hassan"
     },
     {
-      "row": 19,
+      "row": 21,
       "dayOfWeek": "Sunday",
       "month": 6,
       "day": 25,
       "event": "Martyrdom of Imam Reza"
     },
     {
-      "row": 20,
+      "row": 22,
       "dayOfWeek": "Monday",
       "month": 7,
       "day": 2,
       "event": "Martyrdom of Imam Hassan Askari and Start of Imamate of Imam Mahdi"
     },
     {
-      "row": 21,
+      "row": 23,
       "dayOfWeek": "Wednesday",
       "month": 7,
       "day": 11,
       "event": "Birthday of Prophet Muhammad and Imam Sadiq"
     },
     {
-      "row": 22,
+      "row": 24,
       "dayOfWeek": "Monday",
       "month": 9,
       "day": 26,
       "event": "Martyrdom of Fatima Zahra"
     },
     {
-      "row": 23,
+      "row": 25,
       "dayOfWeek": "Friday",
       "month": 11,
       "day": 5,
       "event": "Birthday of Imam Ali"
     },
     {
-      "row": 24,
+      "row": 26,
       "dayOfWeek": "Friday",
       "month": 11,
       "day": 19,
       "event": "Mab'ath"
     },
     {
-      "row": 25,
+      "row": 27,
       "dayOfWeek": "Monday",
       "month": 11,
       "day": 22,
       "event": "Victory of the Islamic Revolution"
     },
     {
-      "row": 26,
+      "row": 28,
       "dayOfWeek": "Monday",
       "month": 12,
       "day": 6,
       "event": "Birthday of Imam Mahdi"
     },
     {
-      "row": 27,
+      "row": 29,
       "dayOfWeek": "Wednesday",
       "month": 12,
       "day": 29,
