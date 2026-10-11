@@ -80,7 +80,7 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
         for year in year_range(calendar, first_year, last_year):
             for month in range(1, 13):
                 model = build_month(calendar, primary, secondary, year, month)
-                months.append(month_html(model, view_id))
+                months.append(month_html(model, view_id, calendar))
 
     index = f"""<!doctype html>
 <html lang="en" data-theme="light">

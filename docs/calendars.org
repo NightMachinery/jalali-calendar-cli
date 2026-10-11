@@ -125,11 +125,19 @@ overridden with the =--KEY-color= and =--KEY-true-color= options.
 =jcal-html --out DIR= pre-renders every month of every view for last year through two
 years ahead. The script ([[file:../jalali_calendar_cli/web/app.js][web/app.js]]) only
 chooses which months to show, marks today from the browser's clock (so a page generated
-months ago is still right about today), and remembers the view, the theme and the
+months ago is still right about today), shows each day's tooltip, and remembers the view, the theme and the
 checkboxes in =localStorage=: "Show the holiday list" (off by default), and "Also show the
 next month" and "Also show the start of the next year" (on by default). The latter adds as
 many of the next year's months as the year grid has columns at the current width, that
 is one row: 4 on a wide screen, January alone on a phone. There is no automatic dark mode: the theme is a manual switch.
+
+The tooltips keep to the same division of labor. A day with holidays carries them in a
+=data-tip= attribute; for the dates, each month carries =data-other=, where each month of
+the other calendar starts in its grid (=[[1, 11, "Khordad", 1405], [22, 1, "Tir", 1405]]=
+for June 2026), so the script finds any day's other date by adding days and never converts
+between calendars itself. The tooltip is one element positioned by the script, not the
+browser's =title= tooltip: it opens on hover with a mouse, on tap (tap again or elsewhere to
+close), and on keyboard focus, and stays inside the viewport.
 
 Generation is deterministic and writes only files whose content changed, so a second run
 reports =unchanged= for all three files (tested). [[file:../site/holidays/refresh.sh][site/holidays/refresh.sh]]

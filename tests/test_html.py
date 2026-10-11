@@ -1,6 +1,8 @@
 import hashlib
+import json
 import pathlib
 import re
+from html import unescape
 
 from jalali_calendar_cli.calendars import GREGORIAN
 from jalali_calendar_cli.html_page import build_page, main
@@ -10,22 +12,51 @@ from jalali_calendar_cli.sources.iran import IranSource
 from jalali_calendar_cli.sources.lmu import LmuSource
 
 
+def cell_tags(html):
+    """{day: the attributes of its <td>}"""
+    return {int(day): attrs for attrs, day in re.findall(r"<td([^>]*)><span>(\d+)</span></td>", html)}
+
+
 def test_month_cells_carry_roles():
     model = build_month(GREGORIAN, LmuSource(), IranSource(), 2026, 6)
-    html = month_html(model, "lmu-iran")
+    html = month_html(model, "lmu-iran", GREGORIAN)
     assert 'data-start="2026-06-01" data-end="2026-06-30"' in html
+    cells = cell_tags(html)
     #: Jun 4 and 5 are a Thursday and a Friday: in the Iranian weekend columns
-    assert '<td class="ph sh sw both"><span>4</span></td>' in html
-    assert '<td class="sh sw"><span>5</span></td>' in html
-    assert '<td class="sw"><span>11</span></td>' in html
-    assert '<td class="sh"><span>24</span></td>' in html
-    assert '<td class="pw"><span>6</span></td>' in html
+    assert cells[4].startswith(' class="ph sh sw both" data-tip=')
+    assert cells[5].startswith(' class="sh sw" data-tip=')
+    assert cells[11] == ' class="sw"'
+    assert cells[24].startswith(' class="sh" data-tip=')
+    assert cells[6] == ' class="pw"'
     assert '<span class="native">14 Khordad</span>' in html
+
+
+def test_tooltips_carry_holidays_and_the_other_calendar():
+    model = build_month(GREGORIAN, LmuSource(), IranSource(), 2026, 6)
+    html = month_html(model, "lmu-iran", GREGORIAN)
+    tip = json.loads(unescape(re.search(r'<td class="ph sh sw both" data-tip="([^"]*)"', html).group(1)))
+    assert tip["b"] == 1
+    assert ["LMU", "Corpus Christi", 0] in tip["h"]
+    assert any(tag == "IR" and secondary == 1 for tag, _, secondary in tip["h"])
+    #: June 2026 starts on 11 Khordad 1405, and 1 Tir is June 22
+    other = json.loads(unescape(re.search(r'data-other="([^"]*)"', html).group(1)))
+    assert other == [[1, 11, "Khordad", 1405], [22, 1, "Tir", 1405]]
+    assert 'data-label="June 2026"' in html
+
+
+def test_jalali_grid_tooltips_carry_gregorian_dates():
+    from jalali_calendar_cli.calendars import JALALI
+
+    model = build_month(JALALI, IranSource(), LmuSource(), 1405, 10)
+    html = month_html(model, "iran-lmu", JALALI)
+    other = json.loads(unescape(re.search(r'data-other="([^"]*)"', html).group(1)))
+    #: 1 Dey 1405 is Dec 22, 2026; Jan 1, 2027 is 11 Dey
+    assert other == [[1, 22, "December", 2026], [11, 1, "January", 2027]]
 
 
 def test_every_week_row_has_seven_cells():
     model = build_month(GREGORIAN, LmuSource(), None, 2026, 3)
-    html = month_html(model, "lmu")
+    html = month_html(model, "lmu", GREGORIAN)
     rows = re.findall(r"<tr>(.*?)</tr>", html.split("<tbody>")[1])
     assert rows and all(row.count("<td") == 7 for row in rows)
 

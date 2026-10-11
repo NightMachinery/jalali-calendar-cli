@@ -1,6 +1,6 @@
 // Holiday calendar page. Every month is already rendered by the generator; this only
-// chooses which ones to show, marks today, and remembers the view, the theme and the
-// checkboxes.
+// chooses which ones to show, marks today, shows each day's tooltip, and remembers the
+// view, the theme and the checkboxes.
 (function () {
   "use strict";
 
@@ -98,6 +98,7 @@
   }
 
   function render() {
+    hideTip();
     var list = byView[state.view];
     var index = find(state.view, state.anchor);
     var current = list[index];
@@ -212,6 +213,141 @@
     if (e.key === "ArrowLeft") step(-1);
     if (e.key === "ArrowRight") step(1);
   });
+
+  // --- Tooltips -------------------------------------------------------------------
+  // Each day shows its date in both calendars and, from its `data-tip`, its holidays. One
+  // element, positioned by hand rather than the browser's native title tooltip: it opens on
+  // hover with a mouse, on tap with a finger or pen (tap again or elsewhere to close), and
+  // on keyboard focus.
+
+  function el(tag, className, text) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  // The other calendar's date of `day`, from the section's `data-other`: where each of
+  // its months starts in this grid (written by the generator; nothing is converted here).
+  function otherDate(section, day) {
+    if (!section._other) section._other = JSON.parse(section.dataset.other);
+    var segment = section._other[0];
+    section._other.forEach(function (s) {
+      if (s[0] <= day) segment = s;
+    });
+    return segment[1] + day - segment[0] + " " + segment[2] + " " + segment[3];
+  }
+
+  function fillTip(td) {
+    var section = td.closest("section.month");
+    var day = +td.textContent;
+    var weekday = section.querySelectorAll("thead th")[td.cellIndex].textContent;
+    tip.textContent = "";
+    var head = el("div", "tip-date", weekday + " " + day + " " + section.dataset.label);
+    head.appendChild(el("span", "tip-other", otherDate(section, day)));
+    tip.appendChild(head);
+    if (!td.dataset.tip) return;
+    var data = JSON.parse(td.dataset.tip);
+    if (data.h.length) {
+      var list = el("ul");
+      data.h.forEach(function (h) {
+        var item = el("li", h[2] ? "secondary" : "primary");
+        if (h[0]) item.appendChild(el("span", "tag", h[0]));
+        item.appendChild(el("span", "name", h[1]));
+        list.appendChild(item);
+      });
+      tip.appendChild(list);
+    }
+    if (data.b) tip.appendChild(el("div", "tip-both", "both free"));
+  }
+
+  // Above the day, or below it when there is no room above; kept inside the viewport, with
+  // the arrow still pointing at the day.
+  function placeTip(td) {
+    var margin = 8;
+    var gap = 8;
+    var cell = td.getBoundingClientRect();
+    tip.classList.remove("below");
+    var width = tip.offsetWidth;
+    var height = tip.offsetHeight;
+    var top = cell.top - height - gap;
+    if (top < margin) {
+      top = cell.bottom + gap;
+      tip.classList.add("below");
+    }
+    var center = cell.left + cell.width / 2;
+    var left = Math.max(margin, Math.min(window.innerWidth - width - margin, center - width / 2));
+    tip.style.top = top + "px";
+    tip.style.left = left + "px";
+    tip.style.setProperty("--arrow-x", Math.max(12, Math.min(width - 12, center - left)) + "px");
+  }
+
+  var tip = el("div", "tip");
+  tip.id = "tip";
+  tip.setAttribute("role", "tooltip");
+  tip.hidden = true;
+  document.body.appendChild(tip);
+  var tipCell = null;
+
+  function showTip(td) {
+    if (tipCell === td && !tip.hidden) return;
+    hideTip();
+    tipCell = td;
+    fillTip(td);
+    tip.hidden = false;
+    placeTip(td);
+    td.setAttribute("aria-describedby", "tip");
+  }
+
+  function hideTip() {
+    if (tipCell) tipCell.removeAttribute("aria-describedby");
+    tipCell = null;
+    tip.hidden = true;
+  }
+
+  // The day cell an event happened in, if any (empty cells have no day).
+  function dayCell(target) {
+    var td = target.closest ? target.closest("tbody td") : null;
+    return td && td.textContent ? td : null;
+  }
+
+  // Every day can be reached with the keyboard.
+  Array.prototype.forEach.call(document.querySelectorAll("tbody td"), function (td) {
+    if (td.textContent) td.tabIndex = 0;
+  });
+
+  var lastPointer = "mouse";
+  document.addEventListener("pointerdown", function (e) {
+    lastPointer = e.pointerType;
+  });
+  main.addEventListener("pointerover", function (e) {
+    var td = e.pointerType === "mouse" && dayCell(e.target);
+    if (td) showTip(td);
+  });
+  main.addEventListener("pointerout", function (e) {
+    var td = e.pointerType === "mouse" && dayCell(e.target);
+    if (td && td === tipCell && !td.contains(e.relatedTarget)) hideTip();
+  });
+  document.addEventListener("click", function (e) {
+    var td = dayCell(e.target);
+    if (!td) return hideTip();
+    if (lastPointer === "mouse") return;
+    if (td === tipCell && !tip.hidden) hideTip();
+    else showTip(td);
+  });
+  // Focus from a tap is not `:focus-visible`, so only keyboard focus opens it here.
+  main.addEventListener("focusin", function (e) {
+    var td = dayCell(e.target);
+    if (td && td.matches(":focus-visible")) showTip(td);
+  });
+  main.addEventListener("focusout", function (e) {
+    if (dayCell(e.target) === tipCell && lastPointer === "mouse") hideTip();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") hideTip();
+  });
+  window.addEventListener("scroll", hideTip, { passive: true });
+  window.addEventListener("resize", hideTip);
 
   render();
 })();

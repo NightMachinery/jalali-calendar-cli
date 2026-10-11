@@ -159,7 +159,105 @@ button[aria-pressed="true"] {
   accent-color: var(--accent);
 }
 
-main.hide-notes .notes {
+main.hide-notes /* a day's tooltip, positioned by app.js */
+.grid tbody td[tabindex] {
+  cursor: default;
+}
+
+.grid tbody td:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.tip {
+  position: fixed;
+  z-index: 10;
+  max-width: min(300px, calc(100vw - 16px));
+  padding: 8px 10px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+/* the arrow, pointing at the day */
+.tip::after {
+  content: "";
+  position: absolute;
+  left: var(--arrow-x, 50%);
+  top: 100%;
+  width: 10px;
+  height: 10px;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.tip.below::after {
+  top: 0;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+}
+
+.tip-date {
+  font-weight: 700;
+}
+
+.tip-other {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.tip ul {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+
+.tip li {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 2px 0;
+}
+
+.tip .tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 5px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.tip .primary .tag,
+.tip .primary .name {
+  color: var(--holiday);
+}
+
+.tip .secondary .tag {
+  background: var(--sec-holiday-bg);
+  border-color: transparent;
+}
+
+.tip-both {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--shared-bg);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.notes {
   display: none;
 }
 
