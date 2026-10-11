@@ -19,6 +19,8 @@ The package installs these commands:
 - =jcal-iran-lmu= and =jcal-iran-lmu-all=: the mirror image, Iranian holidays on a Jalali grid with LMU days off overlaid.
 - =jcal-html=: writes a static HTML page with all of the above.
 
+*Name clash:* on Linux, GNU gcal (e.g. =apt install gcal=) also installs a command called =gcal=. If both are installed, whichever comes first in your =PATH= wins; use =gcal-lmu= or =gcal-all=, which GNU gcal does not have, or check with =command -v gcal=.
+
 See [[file:docs/calendars.org][docs/calendars.org]] for where the holiday data comes from and how the code is organized.
 
 * Usage
