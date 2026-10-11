@@ -29,6 +29,7 @@ TVL_DAYS_OFF = {
 
 class LmuSource:
     tag = "LMU"
+    label = "LMU"
     calendar = GREGORIAN
     weekend = frozenset({SATURDAY, SUNDAY})
 

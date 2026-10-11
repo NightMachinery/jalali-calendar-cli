@@ -32,6 +32,7 @@ def default_holidays_json_path() -> str:
 
 class IranSource:
     tag = "IR"
+    label = "Iran"
     calendar = JALALI
 
     def __init__(self, holidays_json_path=None, weekend=DEFAULT_WEEKEND, fallback=True):
@@ -39,6 +40,7 @@ class IranSource:
         self.weekend = frozenset(weekend)
         self.fallback = fallback
         self._data = None
+        self._years = dict()
 
     @property
     def data(self) -> dict:
@@ -48,6 +50,11 @@ class IranSource:
         return self._data
 
     def jalali_year_events(self, year: int) -> Dict[datetime.date, str]:
+        if year not in self._years:
+            self._years[year] = self._jalali_year_events(year)
+        return self._years[year]
+
+    def _jalali_year_events(self, year: int) -> Dict[datetime.date, str]:
         if str(year) not in self.data:
             return self.computed_year_events(year) if self.fallback else dict()
 

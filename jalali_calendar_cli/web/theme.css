@@ -1,0 +1,284 @@
+/* Holiday calendar page. Colors mirror the terminal presets: text color is the first
+   holiday set, background the second, gold text means both sides are free. */
+
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --text: #22201c;
+  --muted: #6f6a62;
+  --line: #e4e0d8;
+  --accent: #2f5d8a;
+  --holiday: #d23f00;
+  --weekend: #6a2a9c;
+  --shared: #a8740a;
+  --sec-holiday-bg: #96d7e8;
+  --sec-weekend-bg: #e2f2f7;
+  --today-ring: #22201c;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #121417;
+  --surface: #1a1d21;
+  --text: #e6e3dd;
+  --muted: #9a958c;
+  --line: #2c3036;
+  --accent: #8cb8e6;
+  --holiday: #ff6b5a;
+  --weekend: #e08ae6;
+  --shared: #ffcd28;
+  --sec-holiday-bg: #00627a;
+  --sec-weekend-bg: #0d2f39;
+  --today-ring: #ff9a3c;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* `hidden` must win over the display rules below */
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 16px 8px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-height: 36px;
+  cursor: pointer;
+}
+
+button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.views,
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.views button {
+  flex: 1 1 auto;
+}
+
+.controls {
+  margin-top: 8px;
+}
+
+.controls .spacer {
+  flex: 1;
+}
+
+.modes {
+  display: flex;
+  gap: 0;
+}
+
+.modes button:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.modes button:last-child {
+  border-radius: 0 8px 8px 0;
+  border-left: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.legend span.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend .swatch {
+  display: inline-block;
+  min-width: 26px;
+  padding: 1px 4px;
+  text-align: center;
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+main {
+  padding: 12px 16px 32px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+main.year {
+  max-width: 1200px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.month {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.month .title {
+  margin: 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.month .subtitle {
+  margin: 2px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 3px;
+  margin-top: 8px;
+  table-layout: fixed;
+}
+
+.grid th {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 2px 0;
+  border-radius: 6px;
+}
+
+.grid td {
+  text-align: center;
+  padding: 7px 0;
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+main.year .grid td {
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+/* the first holiday set: text color */
+.ph {
+  color: var(--holiday);
+  font-weight: 700;
+}
+
+.pw {
+  color: var(--weekend);
+}
+
+/* the second holiday set: background */
+.sh {
+  background: var(--sec-holiday-bg);
+}
+
+.sw {
+  background: var(--sec-weekend-bg);
+}
+
+/* both sides free */
+.both {
+  color: var(--shared);
+  font-weight: 800;
+}
+
+:root[data-theme="light"] .both {
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.grid th.pw {
+  color: var(--weekend);
+}
+
+.grid td.today {
+  outline: 2px solid var(--today-ring);
+  outline-offset: -2px;
+  font-weight: 800;
+}
+
+.notes {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.notes li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 3px 0;
+  border-top: 1px solid var(--line);
+}
+
+.notes .day {
+  min-width: 22px;
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.notes .primary .day {
+  color: var(--holiday);
+}
+
+.notes .tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+}
+
+.notes .secondary .tag {
+  background: var(--sec-holiday-bg);
+  border-color: transparent;
+}
+
+.notes .native {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+noscript p {
+  padding: 16px;
+}

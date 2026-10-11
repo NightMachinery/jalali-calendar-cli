@@ -18,6 +18,7 @@ gcal-lmu-iran = 'jalali_calendar_cli.commands:gcal_lmu_iran'
 gcal-lmu-iran-all = 'jalali_calendar_cli.commands:gcal_lmu_iran_all'
 jcal-iran-lmu = 'jalali_calendar_cli.commands:jcal_iran_lmu'
 jcal-iran-lmu-all = 'jalali_calendar_cli.commands:jcal_iran_lmu_all'
+jcal-html = 'jalali_calendar_cli.html_page:main'
 
 
 [tool.poetry.dependencies]
