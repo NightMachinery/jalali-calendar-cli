@@ -14,7 +14,7 @@ The package installs these commands:
 - =jcal= (alias =jalali-calendar=): a Jalali month with Iranian holidays.
 - =jcal-all=: all months of a Jalali year.
 - =gcal-lmu= and =gcal-lmu-all=: a Gregorian month, or year, with LMU Munich days off.
-- =gcal=: a Gregorian month with the holiday set(s) chosen by =--sources=.
+- =gcal=: a Gregorian month with the holiday set(s) chosen by =--sources=; =gcal-all= is its year view.
 - =gcal-lmu-iran= and =gcal-lmu-iran-all=: LMU days off on a Gregorian grid, with Iranian holidays overlaid.
 - =jcal-iran-lmu= and =jcal-iran-lmu-all=: the mirror image, Iranian holidays on a Jalali grid with LMU days off overlaid.
 - =jcal-html=: writes a static HTML page with all of the above.
@@ -252,7 +252,7 @@ gcal-lmu 12 2026
    31: New Year's Eve (TV-L)
 #+end_example
 
-=gcal-lmu-all 2026= prints the whole year; =--footnotes= adds a list of its days off. =gcal --sources lmu= is the same as =gcal-lmu=; it is where more holiday sets will go.
+=gcal-lmu-all 2026= prints the whole year; =--footnotes= adds a list of its days off. =gcal= and its year view =gcal-all= default to the same as =gcal-lmu= and =gcal-lmu-all=, and take =--sources= to choose the holiday sets: =--sources iran= shows Iranian holidays on a Gregorian grid, and =--sources lmu,iran= is the same as =gcal-lmu-iran=. It is where more holiday sets will go.
 
 ** Two Holiday Sets on One Grid
 =gcal-lmu-iran= draws LMU days off on a Gregorian grid and overlays Iranian holidays; =jcal-iran-lmu= draws Iranian holidays on a Jalali grid and overlays LMU days off. Both have an =-all= year view.

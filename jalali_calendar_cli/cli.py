@@ -221,6 +221,23 @@ class View:
     secondary: Optional[str] = None
 
 
+def add_sources_arg(parser, view: View) -> None:
+    """`--sources`, defaulting to the view's own holiday sets."""
+    default_sources = ",".join(filter(None, [view.primary, view.secondary]))
+    parser.add_argument(
+        "--sources",
+        type=parse_sources,
+        default=default_sources,
+        help=f"the holiday set to show, optionally followed by a second one to overlay, e.g. lmu,iran (known: {', '.join(SOURCE_NAMES)}; default: {default_sources})",
+    )
+
+
+def view_from_args(view: View, args) -> View:
+    """The view with the holiday sets chosen by `--sources`, when the option exists."""
+    sources = getattr(args, "sources", None)
+    return View(view.calendar, *sources) if sources else view
+
+
 def run_month_view(view: View, argv=None, prog=None, description=None, sources_option=False) -> None:
     parser = argparse.ArgumentParser(prog=prog, description=description)
 
@@ -248,19 +265,12 @@ def run_month_view(view: View, argv=None, prog=None, description=None, sources_o
     add_display_args(parser)
     add_source_args(parser)
     if sources_option:
-        default_sources = ",".join(filter(None, [view.primary, view.secondary]))
-        parser.add_argument(
-            "--sources",
-            type=parse_sources,
-            default=default_sources,
-            help=f"the holiday set to show, optionally followed by a second one to overlay, e.g. lmu,iran (known: {', '.join(SOURCE_NAMES)}; default: {default_sources})",
-        )
+        add_sources_arg(parser, view)
 
     args = parser.parse_args(argv)
     opts = display_options_from_args(args)
 
-    if sources_option:
-        view = View(view.calendar, *args.sources)
+    view = view_from_args(view, args)
     primary = make_source(view.primary, args)
     secondary = make_source(view.secondary, args) if view.secondary else None
 

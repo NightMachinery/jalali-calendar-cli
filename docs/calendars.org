@@ -31,6 +31,7 @@ Each command is a grid calendar plus one or two sources
 
 - =jcal=: Jalali grid, Iran.
 - =gcal-lmu=, =gcal --sources lmu=: Gregorian grid, LMU.
+- =gcal=, =gcal-all=: Gregorian grid, any one or two sources by =--sources= (default =lmu=).
 - =gcal-lmu-iran=: Gregorian grid, LMU, with Iran overlaid.
 - =jcal-iran-lmu=: Jalali grid, Iran, with LMU overlaid.
 - the =-all= variants: the same, as a year view
@@ -115,7 +116,7 @@ overridden with the =--KEY-color= and =--KEY-true-color= options.
    year: the year views and the page ask for each year many times.
 2. Register its name in =make_source= and =SOURCE_NAMES= in
    [[file:../jalali_calendar_cli/cli.py][cli.py]]. It is then available as
-   =gcal --sources NAME= or =gcal --sources NAME,OTHER=.
+   =gcal --sources NAME= or =gcal --sources NAME,OTHER=, and likewise =gcal-all=.
 3. Optionally add shortcut commands in =commands.py= and =pyproject.toml=, and a view to
    =VIEWS= in =html_page.py=.
 

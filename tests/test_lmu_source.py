@@ -2,7 +2,7 @@ import contextlib
 import datetime
 import io
 
-from jalali_calendar_cli.commands import gcal, gcal_lmu
+from jalali_calendar_cli.commands import gcal, gcal_all, gcal_lmu, gcal_lmu_all, gcal_lmu_iran_all
 from jalali_calendar_cli.sources.lmu import LmuSource
 
 #: Bavarian public holidays for 2026 (Munich, so with Assumption Day). Cross-checked on
@@ -59,3 +59,15 @@ def test_gcal_lmu_month():
 
 def test_gcal_sources_option_defaults_to_lmu():
     assert run(gcal, ["6", "2026", "--color", "never"]) == run(gcal_lmu, ["6", "2026", "--color", "never"])
+
+
+def test_gcal_all_defaults_to_gcal_lmu_all():
+    argv = ["2026", "--color", "never"]
+    assert run(gcal_all, argv) == run(gcal_lmu_all, argv)
+
+
+def test_gcal_all_sources():
+    argv = ["2026", "--color", "never", "--footnotes"]
+    assert run(gcal_all, [*argv, "--sources", "lmu,iran"]) == run(gcal_lmu_iran_all, argv)
+    iran = run(gcal_all, [*argv, "--sources", "iran"])
+    assert "Norooz" in iran and "German Unity Day" not in iran

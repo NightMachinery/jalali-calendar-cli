@@ -25,6 +25,15 @@ def gcal(argv=None) -> None:
     )
 
 
+def gcal_all(argv=None) -> None:
+    run_year_view(
+        GCAL_LMU,
+        argv=argv,
+        description="All months of a Gregorian year, with holidays.",
+        sources_option=True,
+    )
+
+
 def gcal_lmu(argv=None) -> None:
     run_month_view(GCAL_LMU, argv=argv, description="A Gregorian month with LMU Munich days off.")
 

@@ -67,8 +67,15 @@ def render_year(
     return "".join(out)
 
 
-def run_year_view(view, argv=None, prog=None, description=None, footnotes=False) -> None:
-    from .cli import add_display_args, add_source_args, display_options_from_args, make_source
+def run_year_view(view, argv=None, prog=None, description=None, footnotes=False, sources_option=False) -> None:
+    from .cli import (
+        add_display_args,
+        add_source_args,
+        add_sources_arg,
+        display_options_from_args,
+        make_source,
+        view_from_args,
+    )
 
     parser = argparse.ArgumentParser(prog=prog, description=description)
     now_year, _ = view.calendar.today()
@@ -97,9 +104,13 @@ def run_year_view(view, argv=None, prog=None, description=None, footnotes=False)
         help="blank lines between rows of months (default: 1)",
     )
     add_source_args(parser)
+    if sources_option:
+        add_sources_arg(parser, view)
 
     args = parser.parse_args(argv)
     opts = display_options_from_args(args)
+
+    view = view_from_args(view, args)
 
     primary = make_source(view.primary, args)
     secondary = make_source(view.secondary, args) if view.secondary else None
