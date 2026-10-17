@@ -146,6 +146,10 @@ key is optional and the defaults give the page above:
   page does not have opens its first view instead.
 - =name= and =short_name= title the page and the installed app; =description= is the
   manifest's.
+- =app_id= (default =cal=) prefixes the page's =localStorage= keys (=cal-view=) and names
+  its service worker's cache (=cal-v1=), so two calendars on one origin keep apart. A config
+  that sets it also gives the manifest that =id=; the default page has none, as before,
+  because an installed app is known by its id and a new one would orphan existing installs.
 - An unknown key is an error, not ignored, because a misspelt =views= would otherwise build
   every view and every source. The exceptions are =device=, =path= and =origin=, which a
   program building the page for a site may add to the same object.
@@ -177,9 +181,13 @@ the worker were not there (so a redeploy shows on the next open, with the server
 =no-cache= and ETag doing their usual job), and a copy is kept; offline, or when the server
 has not answered within 3 s, the last copy is served. Cache first was rejected because it
 shows the previous deploy until a second open. Copies are keyed without the query and
-fragment, so =app.js?v=<hash>= replaces the old copy instead of piling up. The worker is
-static (one cache name, no version), so generation stays deterministic; its file list must
-include every file the page loads, which a test checks for the icons.
+fragment, so =app.js?v=<hash>= replaces the old copy instead of piling up. The cache is
+named after the app id (=cal-v1=), and the worker reads, writes and deletes only caches
+with that prefix: other pages may share the origin, and an earlier worker that deleted
+every cache but its own wiped theirs. The =cal= worker also drops =holidays=, the cache's
+name before app ids, once. The name has no deploy version, so generation stays
+deterministic; the file list must include every file the page loads, which a test checks
+for the icons.
 
 The icons in [[file:../jalali_calendar_cli/web/][web/]] are copied as they are. The PNGs are renders of =icon.svg= (rounded,
 for the browser tab and desktop) and =icon-maskable.svg= (full bleed, with the sheet inside

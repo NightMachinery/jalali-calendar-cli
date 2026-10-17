@@ -4,7 +4,12 @@
 // open, and an installed app still opens without a connection.
 "use strict";
 
-var CACHE = "holidays";
+// The page's app id, filled in by jcal-html. Other pages may share this origin and keep
+// their own caches, so this worker only ever touches caches named after its app.
+var APP = "__APP__";
+var CACHE = APP + "-v1";
+// Before app ids, the calendar's one cache was called this; dropped once, by "cal".
+var LEGACY = APP === "cal" ? "holidays" : null;
 var TIMEOUT = 3000;
 // Everything the page loads; tests/test_html.py checks that the icons are all here.
 var FILES = [
@@ -50,7 +55,7 @@ self.addEventListener("activate", function (e) {
         return Promise.all(
           names
             .filter(function (n) {
-              return n !== CACHE;
+              return n !== CACHE && (n.indexOf(APP + "-") === 0 || n === LEGACY);
             })
             .map(function (n) {
               return caches.delete(n);
@@ -87,10 +92,12 @@ self.addEventListener("fetch", function (e) {
   e.respondWith(
     Promise.race([network, timeout]).catch(function () {
       return caches
-        .match(key(req.url))
-        .then(function (hit) {
-          // the page under another name, such as index.html
-          return hit || (req.mode === "navigate" && caches.match("./"));
+        .open(CACHE)
+        .then(function (cache) {
+          return cache.match(key(req.url)).then(function (hit) {
+            // the page under another name, such as index.html
+            return hit || (req.mode === "navigate" && cache.match("./"));
+          });
         })
         .then(function (hit) {
           // nothing kept: wait for the network after all

@@ -8,6 +8,7 @@ import datetime
 import hashlib
 import json
 import pathlib
+import re
 from html import escape
 from typing import List, Optional
 
@@ -36,10 +37,14 @@ VIEWS = [
 #: the first being the one it opens on; a page with one view has no row of view buttons.
 DEFAULTS = {
     "views": [view[0] for view in VIEWS],
+    #: names the page's localStorage keys and its service worker's cache, so pages on one
+    #: origin keep apart; a config that sets it also gives the manifest this `id`
+    "app_id": "cal",
     "name": "Calendar",
     "short_name": "Calendar",
     "description": "LMU days off and Iranian holidays, alone or overlaid on one grid.",
 }
+APP_ID = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
 #: Keys that a program building the page for a site may add to the same object (the
 #: html-reports tool does); they are not the page's business, so they are ignored.
 HOST_KEYS = {"device", "path", "origin"}
@@ -68,6 +73,11 @@ def load_config(path: Optional[str]) -> dict:
     for key in ("name", "short_name", "description"):
         if not isinstance(config[key], str) or not config[key].strip():
             raise SystemExit(f"jcal-html: {key} must be a non-empty string")
+    if not isinstance(config["app_id"], str) or not APP_ID.match(config["app_id"]):
+        raise SystemExit("jcal-html: app_id must be lowercase letters, digits and dashes")
+    #: only when asked for: an installed app is known by its manifest id, and giving the
+    #: default page one now would make existing installs a different app
+    config["manifest_id"] = config["app_id"] if "app_id" in raw else None
     return config
 
 
@@ -127,6 +137,7 @@ def short_hash(text: str) -> str:
 def web_manifest(config: dict) -> str:
     #: relative URLs: the page is served under a subpath, and from any --out directory
     manifest = {
+        **({"id": config["manifest_id"]} if config.get("manifest_id") else {}),
         "name": config["name"],
         "short_name": config["short_name"],
         "description": config["description"],
@@ -172,7 +183,7 @@ def build_page(sources: dict, first_year: int, last_year: int, config: Optional[
     )
 
     index = f"""<!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-app="{config["app_id"]}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -184,7 +195,7 @@ def build_page(sources: dict, first_year: int, last_year: int, config: Optional[
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="{escape(config["short_name"])}">
 <link rel="stylesheet" href="theme.css?v={short_hash(css)}">
-<script>try{{var t=localStorage.getItem("cal-theme");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
+<script>try{{var t=localStorage.getItem("{config["app_id"]}-theme");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 </head>
 <body>
 <header>
@@ -220,7 +231,7 @@ def build_page(sources: dict, first_year: int, last_year: int, config: Optional[
         "theme.css": css,
         "app.js": js,
         "manifest.webmanifest": web_manifest(config),
-        "sw.js": (WEB_DIR / "sw.js").read_text(),
+        "sw.js": (WEB_DIR / "sw.js").read_text().replace("__APP__", config["app_id"]),
     }
     files.update({name: (WEB_DIR / name).read_bytes() for name in ICON_FILES})
     return files

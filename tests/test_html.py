@@ -99,9 +99,9 @@ def test_holiday_lists_have_a_switch():
     assert 'id="show-next-row"' in files["index.html"]
     assert "main.hide-notes .notes" in files["theme.css"]
     #: the holiday lists start hidden, the next month and row shown
-    assert 'option("show-notes", "cal-notes", false' in files["app.js"]
-    assert 'option("show-next-month", "cal-next-month", true' in files["app.js"]
-    assert 'option("show-next-row", "cal-next-row", true' in files["app.js"]
+    assert 'option("show-notes", "notes", false' in files["app.js"]
+    assert 'option("show-next-month", "next-month", true' in files["app.js"]
+    assert 'option("show-next-row", "next-row", true' in files["app.js"]
 
 
 def test_page_is_installable():
@@ -185,3 +185,26 @@ def test_config_mistakes_are_refused(tmp_path):
                 {"views": ["moon"]}, {"name": ""}, ["iran"]):
         with pytest.raises(SystemExit):
             load_config(write_config(tmp_path, bad))
+
+
+def test_app_id_keeps_pages_on_one_origin_apart(tmp_path):
+    from jalali_calendar_cli.html_page import load_config
+
+    sources = {"lmu": LmuSource(), "iran": IranSource()}
+    default = build_page(sources, 2026, 2026)
+    #: the default keeps the keys /cal readers already have, and no manifest id
+    assert '<html lang="en" data-theme="light" data-app="cal">' in default["index.html"]
+    assert 'localStorage.getItem("cal-theme")' in default["index.html"]
+    assert "id" not in json.loads(default["manifest.webmanifest"])
+    assert 'var APP = "cal";' in default["sw.js"]
+
+    config = load_config(write_config(tmp_path, {"views": ["iran"], "app_id": "jalali"}))
+    files = build_page({"iran": IranSource()}, 2026, 2026, config)
+    assert 'data-app="jalali"' in files["index.html"]
+    assert 'localStorage.getItem("jalali-theme")' in files["index.html"]
+    assert json.loads(files["manifest.webmanifest"])["id"] == "jalali"
+    sw = files["sw.js"]
+    assert 'var APP = "jalali";' in sw and "__APP__" not in sw
+    #: the worker deletes only its own older caches, never another page's
+    assert 'n.indexOf(APP + "-") === 0 || n === LEGACY' in sw
+    assert "caches.match(" not in sw

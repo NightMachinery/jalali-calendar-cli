@@ -45,15 +45,19 @@
     }
   });
 
+  // Settings are kept under the page's app id ("cal-view"), so two calendars on one origin
+  // keep their own.
+  var APP = document.documentElement.dataset.app || "cal";
+
   function store(key, value) {
     try {
-      localStorage.setItem(key, value);
+      localStorage.setItem(APP + "-" + key, value);
     } catch (e) {}
   }
 
   function load(key) {
     try {
-      return localStorage.getItem(key);
+      return localStorage.getItem(APP + "-" + key);
     } catch (e) {
       return null;
     }
@@ -75,8 +79,8 @@
   };
 
   var hash = location.hash.replace(/^#/, "").split("/");
-  var savedView = hash[0] || load("cal-view");
-  var savedMode = hash[1] || load("cal-mode");
+  var savedView = hash[0] || load("view");
+  var savedMode = hash[1] || load("mode");
   if (views.indexOf(savedView) >= 0) state.view = savedView;
   if (savedMode === "month" || savedMode === "year") state.mode = savedMode;
   if (/^\d{4}-\d{2}-\d{2}$/.test(hash[2] || "")) state.anchor = hash[2];
@@ -140,8 +144,8 @@
       b.setAttribute("aria-pressed", String(b.dataset.setMode === state.mode));
     });
     history.replaceState(null, "", "#" + [state.view, state.mode, state.anchor].join("/"));
-    store("cal-view", state.view);
-    store("cal-mode", state.mode);
+    store("view", state.view);
+    store("mode", state.mode);
   }
 
   function step(delta) {
@@ -188,9 +192,9 @@
   function applyNotes() {
     main.classList.toggle("hide-notes", !showNotes.checked);
   }
-  var showNotes = option("show-notes", "cal-notes", false, applyNotes);
-  var showNextMonth = option("show-next-month", "cal-next-month", true, render);
-  var showNextRow = option("show-next-row", "cal-next-row", true, render);
+  var showNotes = option("show-notes", "notes", false, applyNotes);
+  var showNextMonth = option("show-next-month", "next-month", true, render);
+  var showNextRow = option("show-next-row", "next-row", true, render);
   var optionLabels = Array.prototype.slice.call(document.querySelectorAll(".option[data-mode]"));
 
   // The year grid's column count, and so the next row, depends on the width.
@@ -211,11 +215,11 @@
     keyBox.hidden = !open;
     keyButton.setAttribute("aria-expanded", String(open));
   }
-  applyKey(load("cal-key") === "1");
+  applyKey(load("key") === "1");
   keyButton.addEventListener("click", function () {
     var open = keyBox.hidden;
     applyKey(open);
-    store("cal-key", open ? "1" : "0");
+    store("key", open ? "1" : "0");
   });
 
   // The browser's bar (the title bar of the installed app) in the page's background color.
@@ -228,7 +232,7 @@
     var root = document.documentElement;
     var next = root.dataset.theme === "dark" ? "light" : "dark";
     root.dataset.theme = next;
-    store("cal-theme", next);
+    store("theme", next);
     applyThemeColor();
   });
   document.addEventListener("keydown", function (e) {
