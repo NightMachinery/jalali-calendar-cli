@@ -146,6 +146,9 @@ key is optional and the defaults give the page above:
   page does not have opens its first view instead.
 - =name= and =short_name= title the page and the installed app; =description= is the
   manifest's.
+- =icon= picks a shipped icon set: =calendar= (the default) or =jalali=, the same sheet on
+  a green tile with its weekend column in red, so two installed calendars can be told
+  apart. Its files are written under the usual names.
 - =app_id= (default =cal=) prefixes the page's =localStorage= keys (=cal-view=) and names
   its service worker's cache (=cal-v1=), so two calendars on one origin keep apart. A config
   that sets it also gives the manifest that =id=; the default page has none, as before,
@@ -200,6 +203,10 @@ rsvg-convert -w 512 -h 512 icon.svg -o icon-512.png
 rsvg-convert -w 512 -h 512 icon-maskable.svg -o icon-maskable-512.png
 rsvg-convert -w 180 -h 180 icon-maskable.svg -o apple-touch-icon.png
 #+end_example
+
+The =jalali= set is =icon-jalali.svg= and =icon-jalali-maskable.svg=, rendered the same way
+to =icon-jalali-192.png=, =icon-jalali-512.png=, =icon-jalali-maskable-512.png= and
+=apple-touch-icon-jalali.png=.
 
 Generation is deterministic and writes only files whose content changed, so a second run
 reports =unchanged= for every file (tested). [[file:../site/holidays/refresh.sh][site/holidays/refresh.sh]]

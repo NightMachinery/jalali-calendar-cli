@@ -21,6 +21,19 @@ WEEKDAY_ABBRS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 #: Copied as they are. The PNGs are renders of icon.svg and icon-maskable.svg; see
 #: docs/calendars.org for how to redo them.
 ICON_FILES = ["icon.svg", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"]
+#: The shipped icon sets: the files in web/ that each set writes under the names above.
+#: "jalali" is the same sheet on a green tile with its weekend column in red, so that two
+#: installed calendars can be told apart on a home screen.
+ICON_SETS = {
+    "calendar": {name: name for name in ICON_FILES},
+    "jalali": {
+        "icon.svg": "icon-jalali.svg",
+        "icon-192.png": "icon-jalali-192.png",
+        "icon-512.png": "icon-jalali-512.png",
+        "icon-maskable-512.png": "icon-jalali-maskable-512.png",
+        "apple-touch-icon.png": "apple-touch-icon-jalali.png",
+    },
+}
 #: the light theme's --bg in theme.css; app.js keeps the browser's bar in step with the theme
 THEME_COLOR = "#fbfaf7"
 
@@ -40,6 +53,7 @@ DEFAULTS = {
     #: names the page's localStorage keys and its service worker's cache, so pages on one
     #: origin keep apart; a config that sets it also gives the manifest this `id`
     "app_id": "cal",
+    "icon": "calendar",
     "name": "Calendar",
     "short_name": "Calendar",
     "description": "LMU days off and Iranian holidays, alone or overlaid on one grid.",
@@ -73,6 +87,8 @@ def load_config(path: Optional[str]) -> dict:
     for key in ("name", "short_name", "description"):
         if not isinstance(config[key], str) or not config[key].strip():
             raise SystemExit(f"jcal-html: {key} must be a non-empty string")
+    if config["icon"] not in ICON_SETS:
+        raise SystemExit(f"jcal-html: icon must be one of {', '.join(ICON_SETS)}")
     if not isinstance(config["app_id"], str) or not APP_ID.match(config["app_id"]):
         raise SystemExit("jcal-html: app_id must be lowercase letters, digits and dashes")
     #: only when asked for: an installed app is known by its manifest id, and giving the
@@ -233,7 +249,7 @@ def build_page(sources: dict, first_year: int, last_year: int, config: Optional[
         "manifest.webmanifest": web_manifest(config),
         "sw.js": (WEB_DIR / "sw.js").read_text().replace("__APP__", config["app_id"]),
     }
-    files.update({name: (WEB_DIR / name).read_bytes() for name in ICON_FILES})
+    files.update({name: (WEB_DIR / src).read_bytes() for name, src in ICON_SETS[config["icon"]].items()})
     return files
 
 

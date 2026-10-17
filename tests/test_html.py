@@ -208,3 +208,20 @@ def test_app_id_keeps_pages_on_one_origin_apart(tmp_path):
     #: the worker deletes only its own older caches, never another page's
     assert 'n.indexOf(APP + "-") === 0 || n === LEGACY' in sw
     assert "caches.match(" not in sw
+
+
+def test_icon_sets_write_the_same_names(tmp_path):
+    from jalali_calendar_cli.html_page import ICON_SETS, WEB_DIR, load_config
+
+    for name, files in ICON_SETS.items():
+        assert sorted(files) == sorted(ICON_FILES)
+        assert all((WEB_DIR / src).is_file() for src in files.values())
+    config = load_config(write_config(tmp_path, {"views": ["iran"], "icon": "jalali"}))
+    built = build_page({"iran": IranSource()}, 2026, 2026, config)
+    default = build_page({"lmu": LmuSource(), "iran": IranSource()}, 2026, 2026)
+    for name in ICON_FILES:
+        assert built[name] == (WEB_DIR / ICON_SETS["jalali"][name]).read_bytes()
+        assert built[name] != default[name]
+    #: the PNGs are the sizes their names say
+    png = built["icon-512.png"]
+    assert int.from_bytes(png[16:20], "big") == int.from_bytes(png[20:24], "big") == 512
