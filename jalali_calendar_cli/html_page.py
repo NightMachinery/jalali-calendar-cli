@@ -31,6 +31,60 @@ VIEWS = [
     ("iran-lmu", "Iran + LMU", JALALI, "iran", "lmu"),
 ]
 
+#: What --config may set, a JSON object in which every key is optional. The defaults are
+#: the page as it was before the option existed. `views` lists which views the page has,
+#: the first being the one it opens on; a page with one view has no row of view buttons.
+DEFAULTS = {
+    "views": [view[0] for view in VIEWS],
+    "name": "Calendar",
+    "short_name": "Calendar",
+    "description": "LMU days off and Iranian holidays, alone or overlaid on one grid.",
+}
+#: Keys that a program building the page for a site may add to the same object (the
+#: html-reports tool does); they are not the page's business, so they are ignored.
+HOST_KEYS = {"device", "path", "origin"}
+
+
+def load_config(path: Optional[str]) -> dict:
+    """--config, checked, over the defaults. An unknown key is an error rather than
+    ignored: a misspelt `views` would otherwise build every view, and every source."""
+    raw = {}
+    if path:
+        try:
+            raw = json.loads(pathlib.Path(path).read_text())
+        except (OSError, ValueError) as exc:
+            raise SystemExit(f"jcal-html: --config {path}: {exc}")
+    if not isinstance(raw, dict):
+        raise SystemExit("jcal-html: --config must hold a JSON object")
+    unknown = sorted(set(raw) - set(DEFAULTS) - HOST_KEYS)
+    if unknown:
+        raise SystemExit(f"jcal-html: unknown config key(s): {', '.join(unknown)}")
+    config = dict(DEFAULTS)
+    config.update({key: value for key, value in raw.items() if key in DEFAULTS})
+    names = [view[0] for view in VIEWS]
+    views = config["views"]
+    if not isinstance(views, list) or not views or len(set(views)) != len(views) or not set(views) <= set(names):
+        raise SystemExit(f"jcal-html: views must list distinct names from {', '.join(names)}")
+    for key in ("name", "short_name", "description"):
+        if not isinstance(config[key], str) or not config[key].strip():
+            raise SystemExit(f"jcal-html: {key} must be a non-empty string")
+    return config
+
+
+def chosen_views(config: dict) -> list:
+    by_id = {view[0]: view for view in VIEWS}
+    return [by_id[view_id] for view_id in config["views"]]
+
+
+def needed_sources(config: dict) -> list:
+    """The holiday sources the chosen views read, so no other is loaded at all."""
+    names = []
+    for _, _, _, primary, secondary in chosen_views(config):
+        for name in (primary, secondary):
+            if name and name not in names:
+                names.append(name)
+    return names
+
 
 def weekend_text(source) -> str:
     return ", ".join(WEEKDAY_ABBRS[wd] for wd in sorted(source.weekend))
@@ -70,12 +124,12 @@ def short_hash(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()[:10]
 
 
-def web_manifest() -> str:
+def web_manifest(config: dict) -> str:
     #: relative URLs: the page is served under a subpath, and from any --out directory
     manifest = {
-        "name": "Calendar",
-        "short_name": "Calendar",
-        "description": "LMU days off and Iranian holidays, alone or overlaid on one grid.",
+        "name": config["name"],
+        "short_name": config["short_name"],
+        "description": config["description"],
         "start_url": "./",
         "scope": "./",
         "display": "standalone",
@@ -90,15 +144,18 @@ def web_manifest() -> str:
     return json.dumps(manifest, indent=2) + "\n"
 
 
-def build_page(sources: dict, first_year: int, last_year: int) -> dict:
-    """Returns {file name: content} for the page: text as str, the icons as bytes."""
+def build_page(sources: dict, first_year: int, last_year: int, config: Optional[dict] = None) -> dict:
+    """Returns {file name: content} for the page: text as str, the icons as bytes.
+    `sources` needs only the ones the configured views read (needed_sources)."""
+    config = config or DEFAULTS
     css = (WEB_DIR / "theme.css").read_text()
     js = (WEB_DIR / "app.js").read_text()
 
+    views = chosen_views(config)
     buttons: List[str] = []
     legends: List[str] = []
     months: List[str] = []
-    for view_id, label, calendar, primary_name, secondary_name in VIEWS:
+    for view_id, label, calendar, primary_name, secondary_name in views:
         primary = sources[primary_name]
         secondary = sources[secondary_name] if secondary_name else None
         buttons.append(f'<button type="button" data-set-view="{view_id}">{escape(label)}</button>')
@@ -107,26 +164,31 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
             for month in range(1, 13):
                 model = build_month(calendar, primary, secondary, year, month)
                 months.append(month_html(model, view_id, calendar))
+    #: one view needs no buttons to choose it
+    nav = (
+        f'<nav class="views" aria-label="Holiday sets">{"".join(buttons)}</nav>\n'
+        if len(views) > 1
+        else ""
+    )
 
     index = f"""<!doctype html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calendar</title>
+<title>{escape(config["name"])}</title>
 <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="{THEME_COLOR}">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Calendar">
+<meta name="apple-mobile-web-app-title" content="{escape(config["short_name"])}">
 <link rel="stylesheet" href="theme.css?v={short_hash(css)}">
 <script>try{{var t=localStorage.getItem("cal-theme");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 </head>
 <body>
 <header>
-<nav class="views" aria-label="Holiday sets">{"".join(buttons)}</nav>
-<div class="controls">
+{nav}<div class="controls">
 <button type="button" id="prev" aria-label="Previous">&#8249;</button>
 <button type="button" id="today">Today</button>
 <button type="button" id="next" aria-label="Next">&#8250;</button>
@@ -157,7 +219,7 @@ def build_page(sources: dict, first_year: int, last_year: int) -> dict:
         "index.html": index,
         "theme.css": css,
         "app.js": js,
-        "manifest.webmanifest": web_manifest(),
+        "manifest.webmanifest": web_manifest(config),
         "sw.js": (WEB_DIR / "sw.js").read_text(),
     }
     files.update({name: (WEB_DIR / name).read_bytes() for name in ICON_FILES})
@@ -197,11 +259,16 @@ def main(argv: Optional[list] = None) -> None:
         default=this_year + 2,
         help="last Gregorian year to include (default: two years from now)",
     )
+    parser.add_argument(
+        "--config",
+        help="JSON file of page settings: views, name, short_name, description (see docs/calendars.org)",
+    )
     add_source_args(parser)
     args = parser.parse_args(argv)
 
-    sources = {name: make_source(name, args) for name in ("lmu", "iran")}
-    files = build_page(sources, args.from_year, args.to_year)
+    config = load_config(args.config)
+    sources = {name: make_source(name, args) for name in needed_sources(config)}
+    files = build_page(sources, args.from_year, args.to_year, config)
 
     out = pathlib.Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

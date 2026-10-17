@@ -134,3 +134,54 @@ def test_page_works_offline():
     cached = re.search(r"var FILES = \[(.*?)\];", files["sw.js"], re.S).group(1)
     for name in ["./", "theme.css", "app.js", "manifest.webmanifest", *ICON_FILES]:
         assert f'"{name}"' in cached
+
+
+def lmu_words(years):
+    """Every LMU holiday name in those years, and the source's own label."""
+    lmu = LmuSource()
+    names = {name for year in years for name in lmu.year_events(year).values()}
+    return names | {lmu.label}
+
+
+def write_config(tmp_path, config):
+    path = tmp_path / "config.json"
+    path.write_text(json.dumps(config))
+    return str(path)
+
+
+def test_one_view_page_carries_nothing_of_the_other_source(tmp_path, capsys, monkeypatch):
+    out = tmp_path / "out"
+    config = {"views": ["iran"], "name": "Jalali calendar", "short_name": "Jalali",
+              "description": "The Iranian calendar.", "device": "x", "path": "/", "origin": "https://x"}
+    #: the LMU source is never even constructed
+    import jalali_calendar_cli.sources.lmu as lmu_module
+
+    def refuse(*args, **kwargs):
+        raise AssertionError("the LMU source was loaded")
+
+    monkeypatch.setattr(lmu_module.LmuSource, "__init__", refuse)
+    main(["--out", str(out), "--from-year", "2026", "--to-year", "2026",
+          "--config", write_config(tmp_path, config)])
+    monkeypatch.undo()
+    index = (out / "index.html").read_text()
+    assert "data-set-view" not in index and '<nav class="views"' not in index
+    assert 'class="legend" data-view="iran"' in index
+    assert "<title>Jalali calendar</title>" in index
+    assert 'name="apple-mobile-web-app-title" content="Jalali"' in index
+    manifest = json.loads((out / "manifest.webmanifest").read_text())
+    assert (manifest["name"], manifest["short_name"]) == ("Jalali calendar", "Jalali")
+    text = "\n".join(p.read_text() for p in out.iterdir() if p.suffix in {".html", ".js", ".css", ".webmanifest"})
+    leaked = sorted(word for word in lmu_words([2025, 2026, 2027]) if word in text)
+    assert leaked == []
+
+
+def test_config_mistakes_are_refused(tmp_path):
+    import pytest
+
+    from jalali_calendar_cli.html_page import load_config
+
+    assert load_config(None)["views"] == ["lmu", "lmu-iran", "iran", "iran-lmu"]
+    for bad in ({"view": ["iran"]}, {"views": []}, {"views": ["iran", "iran"]},
+                {"views": ["moon"]}, {"name": ""}, ["iran"]):
+        with pytest.raises(SystemExit):
+            load_config(write_config(tmp_path, bad))

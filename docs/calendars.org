@@ -131,6 +131,25 @@ year's start" (on by default). The latter adds as
 many of the next year's months as the year grid has columns at the current width, that
 is one row: 4 on a wide screen, January alone on a phone. There is no automatic dark mode: the theme is a manual switch.
 
+=--config FILE= builds a narrower page from the same code. The file is a JSON object; every
+key is optional and the defaults give the page above:
+
+#+begin_example json
+{"views": ["iran"], "name": "Jalali calendar", "short_name": "Jalali",
+ "description": "The Iranian calendar and its holidays, month by month."}
+#+end_example
+
+- =views= lists the views the page has, from =lmu=, =lmu-iran=, =iran= and =iran-lmu=; the
+  first is the one it opens on. Only the holiday sources those views read are loaded, so
+  with =["iran"]= the LMU source is never constructed and nothing of it is in any file
+  (tested). A page with one view has no row of view buttons. A saved or linked view the
+  page does not have opens its first view instead.
+- =name= and =short_name= title the page and the installed app; =description= is the
+  manifest's.
+- An unknown key is an error, not ignored, because a misspelt =views= would otherwise build
+  every view and every source. The exceptions are =device=, =path= and =origin=, which a
+  program building the page for a site may add to the same object.
+
 Only the view buttons and the navigation row are in the sticky header, each kept on one
 line down to phone width; the color key and the checkboxes sit below it and scroll away, so
 that on a phone the header does not cover half the screen. They are collapsed by default; the

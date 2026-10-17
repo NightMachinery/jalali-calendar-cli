@@ -14,8 +14,10 @@
   sections.forEach(function (s) {
     (byView[s.dataset.view] = byView[s.dataset.view] || []).push(s);
   });
-  var views = viewButtons.map(function (b) {
-    return b.dataset.setView;
+  // In page order, from the months themselves: a page with one view has no view buttons.
+  var views = [];
+  sections.forEach(function (s) {
+    if (views.indexOf(s.dataset.view) < 0) views.push(s.dataset.view);
   });
 
   function pad(n) {
