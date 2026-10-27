@@ -289,4 +289,4 @@ def run_month_view(view: View, argv=None, prog=None, description=None, sources_o
 
     #: Only a terminal has a width to fit; piped output is always side by side.
     columns = shutil.get_terminal_size().columns if sys.stdout.isatty() else None
-    sys.stdout.write(format_months(models, opts, view.calendar, today=datetime.date.today(), columns=columns))
+    sys.stdout.write(format_months(models, opts, today=datetime.date.today(), columns=columns))

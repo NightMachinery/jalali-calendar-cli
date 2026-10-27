@@ -2,16 +2,17 @@ import contextlib
 import io
 
 from jalali_calendar_cli.calendars import JALALI
+from jalali_calendar_cli.commands import jcal_iran_lmu
 from jalali_calendar_cli.jalali_calendar import main
 from jalali_calendar_cli.model import build_month
 from jalali_calendar_cli.render_ansi import DisplayOptions, format_month, format_months, strip_ansi
 from jalali_calendar_cli.sources.iran import IranSource
 
 
-def run_main(argv):
+def run_main(argv, command=main):
     out = io.StringIO()
     with contextlib.redirect_stdout(out):
-        main(argv)
+        command(argv)
     return out.getvalue()
 
 
@@ -41,12 +42,8 @@ def test_month_without_holidays_has_no_empty_holidays_block(tmp_path):
 
 
 def test_next_month_is_shown_by_default():
-    out = run_main(["7", "1402", "--color", "never"])
-    title = out.splitlines()[0]
+    title = run_main(["7", "1402", "--color", "never"]).splitlines()[0]
     assert "1402 Mehr" in title and "1402 Aban" in title
-    #: one holiday list, each entry led by its month (Aban 1402 has none)
-    assert out.split(" Holidays:\n")[1].startswith("   Meh  2: ")
-    assert "   Aba " not in out
 
 
 def test_next_month_can_be_turned_off():
@@ -60,19 +57,42 @@ def test_next_month_crosses_the_year():
     assert "1405 Esfand" in title and "1406 Farvardin" in title
 
 
-def test_colored_months_side_by_side_are_aligned():
-    out = run_main(["12", "1402", "--color", "always", "--true-color"])
-    grid = out.split("Holidays:")[0]
-    widths = {len(strip_ansi(line)) for line in grid.splitlines() if line.strip()}
-    assert len(widths) == 1
+def test_each_month_has_its_holidays_under_it():
+    lines = run_main(["12", "1402", "--color", "never"]).splitlines()
+    second_month = lines[1].index(" Sat", 1)
+    header = next(line for line in lines if "Holidays:" in line)
+    assert header.index(" Holidays:", 1) == second_month
+    row = lines[lines.index(header) + 1]
+    assert row[:second_month].rstrip() == "    6: Birthday of Imam Mahdi"
+    assert row[second_month:] == "    1: Norooz Start"
+
+
+def test_long_holiday_names_wrap_within_their_month():
+    out = run_main(["7", "1402", "--color", "never"])
+    width = len(out.splitlines()[1])
+    assert max(len(line) for line in out.splitlines()) <= width
+    #: the rest of a name goes under its start
+    assert "    2: Martyrdom of Imam Hassan\n       Askari and Start of Imamate\n" in out
+
+
+def test_notes_are_not_split():
+    lines = run_main(["3", "1405", "--color", "never"], command=jcal_iran_lmu).splitlines()
+    left = [line[: lines[2].index(" Sat", 1)].rstrip() for line in lines]
+    index = left.index("    4: LMU  Pentecost Monday")
+    assert left[index + 1] == "            (25 May)"
+
+
+def test_colored_months_side_by_side_match_the_plain_layout():
+    colored = run_main(["12", "1402", "--color", "always", "--true-color"])
+    plain = run_main(["12", "1402", "--color", "never"])
+    #: a colored title keeps its centering spaces inside the color codes
+    assert [line.rstrip() for line in strip_ansi(colored).splitlines()] == plain.splitlines()
 
 
 def test_months_go_one_below_the_other_on_a_narrow_terminal():
     models = [build_month(JALALI, IranSource(), None, 1402, month) for month in (7, 8)]
-    wide = format_months(models, DisplayOptions(), JALALI, columns=80).splitlines()
+    wide = format_months(models, DisplayOptions(), columns=80).splitlines()
     assert "1402 Mehr" in wide[0] and "1402 Aban" in wide[0]
-    #: the holiday names are free to wrap, as they do for one month
-    narrow = format_months(models, DisplayOptions(), JALALI, columns=40).split("Holidays:")[0]
-    assert max(len(line) for line in narrow.splitlines()) <= 40
-    titles = [line.strip() for line in narrow.splitlines() if line.strip().startswith("1402")]
-    assert titles == ["1402 Mehr", "1402 Aban"]
+    #: each with its own holiday list, as when shown alone
+    narrow = format_months(models, DisplayOptions(), columns=40)
+    assert narrow == "\n".join(format_month(model, DisplayOptions()) for model in models)

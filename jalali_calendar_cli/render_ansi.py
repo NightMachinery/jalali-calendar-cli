@@ -3,6 +3,7 @@
 ##
 import datetime
 import re
+import textwrap
 from dataclasses import dataclass, field, replace
 from typing import Dict, List, Optional
 
@@ -254,14 +255,23 @@ def render_grid(
     return f"{headers}\n{''.join(calendar)}", footnotes
 
 
-def format_footnote(footnote) -> str:
-    line = f"{footnote.day:2d}: "
+def footnote_lead(footnote) -> str:
+    """What comes before a footnote's name: its day, and its tag when there is one."""
+    lead = f"{footnote.day:2d}: "
     if footnote.tag:
-        line += f"{footnote.tag:<4} "
-    line += footnote.name
+        lead += f"{footnote.tag:<4} "
+    return lead
+
+
+def footnote_text(footnote) -> str:
+    """A footnote's name, and its note when there is one."""
     if footnote.note:
-        line += f" ({footnote.note})"
-    return line
+        return f"{footnote.name} ({footnote.note})"
+    return footnote.name
+
+
+def format_footnote(footnote) -> str:
+    return footnote_lead(footnote) + footnote_text(footnote)
 
 
 def format_month(
@@ -288,9 +298,11 @@ def month_lines(model: MonthModel, opts: DisplayOptions, today: Optional[datetim
     return format_month(model, opts, today=today).rstrip("\n").split("\n")
 
 
-def side_by_side(blocks: List[List[str]], gap: int) -> List[str]:
-    """Blocks of lines next to each other, `gap` spaces apart, each padded to the widest line."""
-    width = max(len(strip_ansi(line)) for lines in blocks for line in lines)
+def side_by_side(blocks: List[List[str]], gap: int, width: Optional[int] = None) -> List[str]:
+    """Blocks of lines next to each other, `gap` spaces apart, each padded to `width`
+    (default: the widest line)."""
+    if width is None:
+        width = max(len(strip_ansi(line)) for lines in blocks for line in lines)
     height = max(len(lines) for lines in blocks)
     out = []
     for i in range(height):
@@ -311,15 +323,33 @@ def month_footnotes(models: List[MonthModel], calendar, line_prefix: str) -> Lis
     ]
 
 
+def footnote_column(model: MonthModel, line_prefix: str, width: int) -> List[str]:
+    """A month's holiday list, to go under it beside another month's: the names are
+    wrapped to keep it within `width`."""
+    if not model.footnotes:
+        return []
+    lines = [f"{line_prefix}Holidays:"]
+    for footnote in model.footnotes:
+        lead = f"{line_prefix}  {footnote_lead(footnote)}"
+        #: a note such as "(25 May)" is not split; `textwrap` does not break at no-break spaces
+        text = footnote.name
+        if footnote.note:
+            text += " (" + footnote.note.replace(" ", "\xa0") + ")"
+        parts = textwrap.wrap(text, max(width - len(lead), 10), break_long_words=False)
+        parts = [part.replace("\xa0", " ") for part in parts]
+        lines.append(lead + parts[0])
+        lines.extend(" " * len(lead) + part for part in parts[1:])
+    return lines
+
+
 def format_months(
     models: List[MonthModel],
     opts: DisplayOptions,
-    calendar,
     today: Optional[datetime.date] = None,
     gap: int = 3,
     columns: Optional[int] = None,
 ) -> str:
-    """Consecutive months side by side, with one holiday list for all of them.
+    """Consecutive months side by side, each with its holiday list under it.
 
     When `columns` is given and they do not fit in it, they go one below the other.
     """
@@ -327,14 +357,14 @@ def format_months(
         return format_month(models[0], opts, today=today)
 
     blocks = [month_lines(model, replace(opts, footnotes=False), today) for model in models]
-    lines = side_by_side(blocks, gap)
-    if columns is not None and len(strip_ansi(lines[0])) > columns:
-        lines = [line for index, block in enumerate(blocks) for line in ([""] if index else []) + block]
-    out = "\n".join(lines) + "\n"
+    width = max(len(strip_ansi(line)) for lines in blocks for line in lines)
+    if columns is not None and width * len(blocks) + gap * (len(blocks) - 1) > columns:
+        return "\n".join(format_month(model, opts, today=today) for model in models)
 
-    footnotes = month_footnotes(models, calendar, opts.line_prefix) if opts.footnotes else []
-    if footnotes:
-        out += f"\n{opts.line_prefix}Holidays:\n"
-        out += "\n".join(footnotes) + "\n"
+    lines = side_by_side(blocks, gap, width)
+    footnotes = [footnote_column(model, opts.line_prefix, width) for model in models] if opts.footnotes else []
+    if any(footnotes):
+        lines += [""] + side_by_side(footnotes, gap, width)
 
-    return out
+    #: the padding of the last column is not needed; a tinted cell ends in a reset code, so it stays
+    return "\n".join(line.rstrip(" ") for line in lines) + "\n"
