@@ -34,6 +34,12 @@ Each command is a grid calendar plus one or two sources
 - =gcal=, =gcal-all=: Gregorian grid, any one or two sources by =--sources= (default =lmu=).
 - =gcal-lmu-iran=: Gregorian grid, LMU, with Iran overlaid.
 - =jcal-iran-lmu=: Jalali grid, Iran, with LMU overlaid.
+- all of the above, except =gcal-all=, are *month views*: they show the month asked for
+  and, unless =--no-next-month= is given, the following one, so that the turn of the
+  month can be planned across, as the HTML page's "Next month" checkbox does. The two go
+  side by side, with one holiday list whose entries are led by their month (=Esf  6:=),
+  as in the year views; on a terminal too narrow for that, the second goes below the
+  first. Piped output is always side by side, so it does not depend on the terminal.
 - the =-all= variants: the same, as a year view
   ([[file:../jalali_calendar_cli/year_view.py][year_view.py]]), which replaced
   =jcal_all.pl= and renders all twelve months in one process. The year views leave out
@@ -220,4 +226,6 @@ absolute directory to write to instead, and =HTML_REPORTS_CONFIG= to a =--config
 were captured before the renderer refactor (the =jcal= months, plain and colored) and
 from the old Perl script (the =jcal-all= years), so they pin the output byte for byte.
 The colored month goldens without =_fri= show the Thursday and Friday weekend; the
-=_fri= ones are the old behavior, reproduced with =--iran-weekend fri=.
+=_fri= ones are the old behavior, reproduced with =--iran-weekend fri=. The month goldens
+run with =--no-next-month=, except =jcal_12_1402_next.txt=, which was captured after the
+next month became the default, and crosses into the next year.

@@ -4,12 +4,14 @@
 import argparse
 import datetime
 import os
+import shutil
 import sys
 from dataclasses import dataclass
 from typing import Optional
 
+from .calendars import next_month
 from .model import build_month
-from .render_ansi import COLOR_KEYS, DisplayOptions, format_month
+from .render_ansi import COLOR_KEYS, DisplayOptions, format_months
 
 #: Help texts for the per-key color options; `None` hides the option.
 COLOR_HELP = {
@@ -261,6 +263,12 @@ def run_month_view(view: View, argv=None, prog=None, description=None, sources_o
         help=f"year in {calendar_name} calendar (default: current year)",
     )
     ##
+    parser.add_argument(
+        "--next-month",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="also show the following month, beside this one, or below it when the terminal is too narrow (default: on)",
+    )
 
     add_display_args(parser)
     add_source_args(parser)
@@ -274,5 +282,11 @@ def run_month_view(view: View, argv=None, prog=None, description=None, sources_o
     primary = make_source(view.primary, args)
     secondary = make_source(view.secondary, args) if view.secondary else None
 
-    model = build_month(view.calendar, primary, secondary, args.year, args.month)
-    sys.stdout.write(format_month(model, opts, today=datetime.date.today()))
+    months = [(args.year, args.month)]
+    if args.next_month:
+        months.append(next_month(args.year, args.month))
+    models = [build_month(view.calendar, primary, secondary, year, month) for year, month in months]
+
+    #: Only a terminal has a width to fit; piped output is always side by side.
+    columns = shutil.get_terminal_size().columns if sys.stdout.isatty() else None
+    sys.stdout.write(format_months(models, opts, view.calendar, today=datetime.date.today(), columns=columns))

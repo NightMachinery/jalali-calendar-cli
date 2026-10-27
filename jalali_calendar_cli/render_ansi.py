@@ -3,7 +3,7 @@
 ##
 import datetime
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Dict, List, Optional
 
 import colorama
@@ -310,3 +310,31 @@ def month_footnotes(models: List[MonthModel], calendar, line_prefix: str) -> Lis
         for footnote in model.footnotes
     ]
 
+
+def format_months(
+    models: List[MonthModel],
+    opts: DisplayOptions,
+    calendar,
+    today: Optional[datetime.date] = None,
+    gap: int = 3,
+    columns: Optional[int] = None,
+) -> str:
+    """Consecutive months side by side, with one holiday list for all of them.
+
+    When `columns` is given and they do not fit in it, they go one below the other.
+    """
+    if len(models) == 1:
+        return format_month(models[0], opts, today=today)
+
+    blocks = [month_lines(model, replace(opts, footnotes=False), today) for model in models]
+    lines = side_by_side(blocks, gap)
+    if columns is not None and len(strip_ansi(lines[0])) > columns:
+        lines = [line for index, block in enumerate(blocks) for line in ([""] if index else []) + block]
+    out = "\n".join(lines) + "\n"
+
+    footnotes = month_footnotes(models, calendar, opts.line_prefix) if opts.footnotes else []
+    if footnotes:
+        out += f"\n{opts.line_prefix}Holidays:\n"
+        out += "\n".join(footnotes) + "\n"
+
+    return out

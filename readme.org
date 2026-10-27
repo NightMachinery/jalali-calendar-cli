@@ -34,10 +34,10 @@ See [[file:docs/calendars.org][docs/calendars.org]] for where the holiday data c
 
 
 #+begin_example bash
-usage: jcal [-h] [--color {auto,always,never}]
-            [--true-color | --no-true-color] [--footnotes | --no-footnotes]
-            [--indentation INDENTATION] [--line-prefix LINE_PREFIX]
-            [--color-preset {light,dark}]
+usage: jcal [-h] [--next-month | --no-next-month]
+            [--color {auto,always,never}] [--true-color | --no-true-color]
+            [--footnotes | --no-footnotes] [--indentation INDENTATION]
+            [--line-prefix LINE_PREFIX] [--color-preset {light,dark}]
             [--weekend-true-color WEEKEND_TRUE_COLOR]
             [--weekend-color WEEKEND_COLOR]
             [--holiday-true-color HOLIDAY_TRUE_COLOR]
@@ -62,6 +62,9 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
+  --next-month, --no-next-month
+                        also show the following month, beside this one, or
+                        below it when the terminal is too narrow (default: on)
   --color {auto,always,never}
                         colorize the output
   --true-color, --no-true-color
@@ -131,30 +134,42 @@ holiday data:
 #+end_example
 
 ** Examples
+The month views show the following month beside the one you asked for, so you can plan across the turn of the month. On a terminal too narrow for both, it goes below instead.
+
 #+begin_example bash
-jcal 12
+jcal 12 1402
 #+end_example
 
 #+begin_example
-            1402 Esfand           
- Sat  Sun  Mon  Tue  Wed  Thu  Fri
-                  1    2    3    4
-   5    6    7    8    9   10   11
-  12   13   14   15   16   17   18
-  19   20   21   22   23   24   25
-  26   27   28   29
+            1402 Esfand                        1403 Farvardin
+ Sat  Sun  Mon  Tue  Wed  Thu  Fri    Sat  Sun  Mon  Tue  Wed  Thu  Fri
+                  1    2    3    4                          1    2    3
+   5    6    7    8    9   10   11      4    5    6    7    8    9   10
+  12   13   14   15   16   17   18     11   12   13   14   15   16   17
+  19   20   21   22   23   24   25     18   19   20   21   22   23   24
+  26   27   28   29                    25   26   27   28   29   30   31
 
  Holidays:
-    6: Birthday of Imam Mahdi
-   29: Nationalization of the Oil Industry
+   Esf  6: Birthday of Imam Mahdi
+   Esf 29: Nationalization of the Oil Industry
+   Far  1: Norooz Start
+   Far  2: Norooz Holiday
+   Far  3: Norooz Holiday
+   Far  4: Norooz Holiday
+   Far 12: Islamic Republic Day
+   Far 13: Martyrdom of Imam Ali - Nature Day
+   Far 22: Eid Fitr
+   Far 23: Eid Fitr Holiday
 #+end_example
 
+=--no-next-month= shows one month:
+
 #+begin_example bash
-jcal 7 1402
+jcal --no-next-month 7 1402
 #+end_example
 
 #+begin_example
-             1402 Mehr            
+             1402 Mehr
  Sat  Sun  Mon  Tue  Wed  Thu  Fri
    1    2    3    4    5    6    7
    8    9   10   11   12   13   14
@@ -239,19 +254,21 @@ gcal-lmu 12 2026
 #+end_example
 
 #+begin_example
-           2026 December
- Mon  Tue  Wed  Thu  Fri  Sat  Sun
-        1    2    3    4    5    6
-   7    8    9   10   11   12   13
-  14   15   16   17   18   19   20
-  21   22   23   24   25   26   27
-  28   29   30   31
+           2026 December                        2027 January
+ Mon  Tue  Wed  Thu  Fri  Sat  Sun    Mon  Tue  Wed  Thu  Fri  Sat  Sun
+        1    2    3    4    5    6                          1    2    3
+   7    8    9   10   11   12   13      4    5    6    7    8    9   10
+  14   15   16   17   18   19   20     11   12   13   14   15   16   17
+  21   22   23   24   25   26   27     18   19   20   21   22   23   24
+  28   29   30   31                    25   26   27   28   29   30   31
 
  Holidays:
-   24: Christmas Eve (TV-L)
-   25: Christmas Day
-   26: Second Day of Christmas
-   31: New Year's Eve (TV-L)
+   Dec 24: Christmas Eve (TV-L)
+   Dec 25: Christmas Day
+   Dec 26: Second Day of Christmas
+   Dec 31: New Year's Eve (TV-L)
+   Jan  1: New Year's Day
+   Jan  6: Epiphany
 #+end_example
 
 =gcal-lmu-all 2026= prints the whole year; =--footnotes= adds a list of its days off. =gcal= and its year view =gcal-all= default to the same as =gcal-lmu= and =gcal-lmu-all=, and take =--sources= to choose the holiday sets: =--sources iran= shows Iranian holidays on a Gregorian grid, and =--sources lmu,iran= is the same as =gcal-lmu-iran=. It is where more holiday sets will go.
@@ -269,7 +286,7 @@ The background thus goes from nothing to faint (their weekend), strong (their ho
 A second title line gives the other calendar's months (in the year views it shares the title line, abbreviated, as in =2026 March · Esf–Far=), and the footnotes are tagged with their set. Entries of the second set carry their date in their own calendar:
 
 #+begin_example bash
-gcal-lmu-iran 6 2026 --color never
+gcal-lmu-iran --no-next-month 6 2026 --color never
 #+end_example
 
 #+begin_example

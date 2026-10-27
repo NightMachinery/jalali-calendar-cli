@@ -26,7 +26,7 @@ def cell(model, day):
 
 
 def test_june_2026_footnotes():
-    out = run(gcal_lmu_iran, ["6", "2026", "--color", "never"])
+    out = run(gcal_lmu_iran, ["6", "2026", "--color", "never", "--no-next-month"])
     assert out.splitlines()[:2] == [
         "             2026 June            ",
         "         Khordad–Tir 1405         ",
@@ -41,7 +41,7 @@ def test_june_2026_footnotes():
 
 
 def test_june_2026_colors():
-    lines = run(gcal_lmu_iran, ["6", "2026", "--color", "always", "--true-color"]).splitlines()
+    lines = run(gcal_lmu_iran, ["6", "2026", "--color", "always", "--true-color", "--no-next-month"]).splitlines()
     #: header: the Iranian weekend is tinted
     assert f"{SECONDARY_WEEKEND_BG}Thu" in lines[2]
     assert f"{SECONDARY_WEEKEND_BG}Fri" in lines[2]
@@ -91,7 +91,7 @@ def test_mirror_views_agree():
 
 
 def test_jalali_overlay_notes_use_gregorian_dates():
-    out = run(jcal_iran_lmu, ["3", "1405", "--color", "never"])
+    out = run(jcal_iran_lmu, ["3", "1405", "--color", "never", "--no-next-month"])
     assert "   14: LMU  Corpus Christi (4 Jun)" in out
     assert out.splitlines()[1].strip() == "May–June 2026"
 

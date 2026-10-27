@@ -57,6 +57,11 @@ def get_jalali_days(year: int, month: int) -> int:
     return num_days
 
 
+def next_month(year: int, month: int) -> Tuple[int, int]:
+    """The `(year, month)` after this one. Both calendars have twelve months."""
+    return (year + 1, 1) if month == 12 else (year, month + 1)
+
+
 def _span(first: Tuple[int, str], last: Tuple[int, str]) -> str:
     """`(year, month_name)` pairs to "Mehr–Aban 1405" or "Esfand 1404–Farvardin 1405"."""
     (first_year, first_month), (last_year, last_month) = first, last
