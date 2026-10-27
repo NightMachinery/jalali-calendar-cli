@@ -8,12 +8,7 @@ import sys
 from typing import List, Optional
 
 from .model import MonthModel, build_month
-from .render_ansi import DisplayOptions, format_footnote, format_month, strip_ansi
-
-
-def month_lines(model: MonthModel, opts: DisplayOptions, today) -> List[str]:
-    text = format_month(model, opts, today=today)
-    return text.rstrip("\n").split("\n")
+from .render_ansi import DisplayOptions, month_footnotes, month_lines, side_by_side
 
 
 def render_year(
@@ -35,31 +30,14 @@ def render_year(
     for row_index, row in enumerate(rows):
         #: =calendars= is a list (months) of list of strings (rows of each month).
         calendars = [month_lines(model, grid_opts, today) for model in row]
-
-        #: max visible row length of the current row of months
-        max_row_length = max(len(strip_ansi(line)) for lines in calendars for line in lines)
-        max_height = max(len(lines) for lines in calendars)
-
-        for i in range(max_height):
-            cells = []
-            for lines in calendars:
-                if i < len(lines):
-                    line = lines[i]
-                    cells.append(line + " " * (max_row_length - len(strip_ansi(line))))
-                else:
-                    cells.append(" " * max_row_length)
-            out.append((" " * outer_indent).join(cells) + "\n")
+        out.extend(line + "\n" for line in side_by_side(calendars, outer_indent))
 
         #: no separator after the last row
         if row_index < len(rows) - 1:
             out.append("\n" * horizontal_indent)
 
     if footnotes:
-        lines = []
-        for model in models:
-            month_abbr = calendar.month_name(model.month)[:3]
-            for footnote in model.footnotes:
-                lines.append(f"{opts.line_prefix}  {month_abbr} {format_footnote(footnote)}")
+        lines = month_footnotes(models, calendar, opts.line_prefix)
         if lines:
             out.append(f"\n{opts.line_prefix}Holidays:\n")
             out.append("\n".join(lines) + "\n")

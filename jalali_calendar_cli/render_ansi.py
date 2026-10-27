@@ -4,7 +4,7 @@
 import datetime
 import re
 from dataclasses import dataclass, field
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 import colorama
 from colorama import Style
@@ -281,3 +281,32 @@ def format_month(
         out += footnotes + "\n"
 
     return out
+
+
+def month_lines(model: MonthModel, opts: DisplayOptions, today: Optional[datetime.date] = None) -> List[str]:
+    """`format_month` as a list of lines, without the trailing newline."""
+    return format_month(model, opts, today=today).rstrip("\n").split("\n")
+
+
+def side_by_side(blocks: List[List[str]], gap: int) -> List[str]:
+    """Blocks of lines next to each other, `gap` spaces apart, each padded to the widest line."""
+    width = max(len(strip_ansi(line)) for lines in blocks for line in lines)
+    height = max(len(lines) for lines in blocks)
+    out = []
+    for i in range(height):
+        cells = []
+        for lines in blocks:
+            line = lines[i] if i < len(lines) else ""
+            cells.append(line + " " * (width - len(strip_ansi(line))))
+        out.append((" " * gap).join(cells))
+    return out
+
+
+def month_footnotes(models: List[MonthModel], calendar, line_prefix: str) -> List[str]:
+    """The footnotes of several months in one list, each led by its month's abbreviated name."""
+    return [
+        f"{line_prefix}  {calendar.month_name(model.month)[:3]} {format_footnote(footnote)}"
+        for model in models
+        for footnote in model.footnotes
+    ]
+
