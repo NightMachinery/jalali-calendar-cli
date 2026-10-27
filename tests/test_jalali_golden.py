@@ -10,7 +10,7 @@ GOLDEN_DIR = pathlib.Path(__file__).parent / "golden"
 #: renderer refactor, when Friday was the only weekend day. The colored ones without
 #: `_fri` show the Thursday + Friday weekend.
 #: None of these months contain "today", so the output is date-independent.
-#: They pin one month at a time, so they all run with `--no-next-month`.
+#: They pin one month at a time, so they all run with `--next-month never`.
 SINGLE_MONTH_CASES = {
     "jcal_7_1402.txt": ["7", "1402", "--color", "never"],
     "jcal_12_1402.txt": ["12", "1402", "--color", "never"],
@@ -59,7 +59,7 @@ SINGLE_MONTH_CASES = {
     ],
 }
 
-CASES = {name: [*args, "--no-next-month"] for name, args in SINGLE_MONTH_CASES.items()}
+CASES = {name: [*args, "--next-month", "never"] for name, args in SINGLE_MONTH_CASES.items()}
 #: Captured after the next month became the default: Esfand 1402 and Farvardin 1403.
 CASES["jcal_12_1402_next.txt"] = ["12", "1402", "--color", "never"]
 

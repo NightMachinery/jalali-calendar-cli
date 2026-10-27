@@ -52,7 +52,7 @@ def test_events_are_limited_to_the_range():
 
 
 def test_gcal_lmu_month():
-    out = run(gcal_lmu, ["6", "2026", "--color", "never", "--no-next-month"])
+    out = run(gcal_lmu, ["6", "2026", "--color", "never", "--next-month", "never"])
     assert out.splitlines()[1] == " Mon  Tue  Wed  Thu  Fri  Sat  Sun"
     assert "    4: Corpus Christi" in out
 

@@ -11,7 +11,7 @@ from typing import Optional
 
 from .calendars import next_month
 from .model import build_month
-from .render_ansi import COLOR_KEYS, DisplayOptions, format_months
+from .render_ansi import COLOR_KEYS, DisplayOptions, fits_side_by_side, format_months
 
 #: Help texts for the per-key color options; `None` hides the option.
 COLOR_HELP = {
@@ -265,9 +265,9 @@ def run_month_view(view: View, argv=None, prog=None, description=None, sources_o
     ##
     parser.add_argument(
         "--next-month",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="also show the following month, beside this one, or below it when the terminal is too narrow (default: on)",
+        choices=["auto", "always", "never"],
+        default="auto",
+        help="also show the following month, beside this one: auto when the terminal is wide enough for both (and when piped), always (below this one when it is not), or never (default: auto)",
     )
 
     add_display_args(parser)
@@ -282,11 +282,13 @@ def run_month_view(view: View, argv=None, prog=None, description=None, sources_o
     primary = make_source(view.primary, args)
     secondary = make_source(view.secondary, args) if view.secondary else None
 
-    months = [(args.year, args.month)]
-    if args.next_month:
-        months.append(next_month(args.year, args.month))
-    models = [build_month(view.calendar, primary, secondary, year, month) for year, month in months]
-
-    #: Only a terminal has a width to fit; piped output is always side by side.
+    #: Only a terminal has a width to fit; piped output counts as wide enough.
     columns = shutil.get_terminal_size().columns if sys.stdout.isatty() else None
+
+    models = [build_month(view.calendar, primary, secondary, args.year, args.month)]
+    if args.next_month != "never":
+        following = build_month(view.calendar, primary, secondary, *next_month(args.year, args.month))
+        if args.next_month == "always" or fits_side_by_side([*models, following], opts, columns):
+            models.append(following)
+
     sys.stdout.write(format_months(models, opts, today=datetime.date.today(), columns=columns))

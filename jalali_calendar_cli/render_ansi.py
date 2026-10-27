@@ -342,11 +342,25 @@ def footnote_column(model: MonthModel, line_prefix: str, width: int) -> List[str
     return lines
 
 
+#: spaces between months side by side, after each month's own line prefix
+MONTHS_GAP = 3
+
+
+def fits_side_by_side(models: List[MonthModel], opts: DisplayOptions, columns: Optional[int], gap: int = MONTHS_GAP) -> bool:
+    """Whether the months fit side by side in `columns`; `None` means there is no limit.
+    The holiday lists always fit, since their names wrap to the month's width."""
+    if columns is None:
+        return True
+    blocks = [month_lines(model, replace(opts, footnotes=False)) for model in models]
+    width = max(len(strip_ansi(line)) for lines in blocks for line in lines)
+    return width * len(blocks) + gap * (len(blocks) - 1) <= columns
+
+
 def format_months(
     models: List[MonthModel],
     opts: DisplayOptions,
     today: Optional[datetime.date] = None,
-    gap: int = 3,
+    gap: int = MONTHS_GAP,
     columns: Optional[int] = None,
 ) -> str:
     """Consecutive months side by side, each with its holiday list under it.
@@ -355,11 +369,11 @@ def format_months(
     """
     if len(models) == 1:
         return format_month(models[0], opts, today=today)
+    if not fits_side_by_side(models, opts, columns, gap):
+        return "\n".join(format_month(model, opts, today=today) for model in models)
 
     blocks = [month_lines(model, replace(opts, footnotes=False), today) for model in models]
     width = max(len(strip_ansi(line)) for lines in blocks for line in lines)
-    if columns is not None and width * len(blocks) + gap * (len(blocks) - 1) > columns:
-        return "\n".join(format_month(model, opts, today=today) for model in models)
 
     lines = side_by_side(blocks, gap, width)
     footnotes = [footnote_column(model, opts.line_prefix, width) for model in models] if opts.footnotes else []

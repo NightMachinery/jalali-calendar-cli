@@ -34,7 +34,7 @@ See [[file:docs/calendars.org][docs/calendars.org]] for where the holiday data c
 
 
 #+begin_example bash
-usage: jcal [-h] [--next-month | --no-next-month]
+usage: jcal [-h] [--next-month {auto,always,never}]
             [--color {auto,always,never}] [--true-color | --no-true-color]
             [--footnotes | --no-footnotes] [--indentation INDENTATION]
             [--line-prefix LINE_PREFIX] [--color-preset {light,dark}]
@@ -62,9 +62,11 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-  --next-month, --no-next-month
-                        also show the following month, beside this one, or
-                        below it when the terminal is too narrow (default: on)
+  --next-month {auto,always,never}
+                        also show the following month, beside this one: auto
+                        when the terminal is wide enough for both (and when
+                        piped), always (below this one when it is not), or
+                        never (default: auto)
   --color {auto,always,never}
                         colorize the output
   --true-color, --no-true-color
@@ -134,7 +136,7 @@ holiday data:
 #+end_example
 
 ** Examples
-The month views show the following month beside the one you asked for, so you can plan across the turn of the month. On a terminal too narrow for both, it goes below instead.
+The month views show the following month beside the one you asked for, so you can plan across the turn of the month. On a terminal too narrow for both, it is left out; =--next-month always= puts it below instead.
 
 #+begin_example bash
 jcal 12 1402
@@ -161,10 +163,10 @@ jcal 12 1402
                                         23: Eid Fitr Holiday
 #+end_example
 
-=--no-next-month= shows one month:
+=--next-month never= shows one month:
 
 #+begin_example bash
-jcal --no-next-month 7 1402
+jcal --next-month never 7 1402
 #+end_example
 
 #+begin_example
@@ -283,7 +285,7 @@ The background thus goes from nothing to faint (their weekend), strong (their ho
 A second title line gives the other calendar's months (in the year views it shares the title line, abbreviated, as in =2026 March · Esf–Far=), and the footnotes are tagged with their set. Entries of the second set carry their date in their own calendar:
 
 #+begin_example bash
-gcal-lmu-iran --no-next-month 6 2026 --color never
+gcal-lmu-iran --next-month never 6 2026 --color never
 #+end_example
 
 #+begin_example

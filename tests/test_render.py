@@ -1,5 +1,7 @@
 import contextlib
 import io
+import os
+import shutil
 
 from jalali_calendar_cli.calendars import JALALI
 from jalali_calendar_cli.commands import jcal_iran_lmu
@@ -47,7 +49,7 @@ def test_next_month_is_shown_by_default():
 
 
 def test_next_month_can_be_turned_off():
-    out = run_main(["7", "1402", "--color", "never", "--no-next-month"])
+    out = run_main(["7", "1402", "--color", "never", "--next-month", "never"])
     model = build_month(JALALI, IranSource(), None, 1402, 7)
     assert out == format_month(model, DisplayOptions(line_prefix=" "))
 
@@ -96,3 +98,31 @@ def test_months_go_one_below_the_other_on_a_narrow_terminal():
     #: each with its own holiday list, as when shown alone
     narrow = format_months(models, DisplayOptions(), columns=40)
     assert narrow == "\n".join(format_month(model, DisplayOptions()) for model in models)
+
+
+class Terminal(io.StringIO):
+    def isatty(self):
+        return True
+
+
+def run_on_terminal(argv, columns, monkeypatch):
+    monkeypatch.setattr(shutil, "get_terminal_size", lambda: os.terminal_size((columns, 24)))
+    out = Terminal()
+    with contextlib.redirect_stdout(out):
+        main(argv)
+    return out.getvalue()
+
+
+def test_next_month_auto_needs_room_for_both(monkeypatch):
+    argv = ["7", "1402", "--color", "never"]
+    wide = run_on_terminal(argv, 100, monkeypatch).splitlines()[0]
+    assert "1402 Mehr" in wide and "1402 Aban" in wide
+    #: two months side by side take 71 columns
+    narrow = run_on_terminal(argv, 70, monkeypatch)
+    assert narrow == run_main([*argv, "--next-month", "never"])
+
+
+def test_next_month_always_goes_below_when_there_is_no_room(monkeypatch):
+    out = run_on_terminal(["7", "1402", "--color", "never", "--next-month", "always"], 70, monkeypatch)
+    titles = [line.strip() for line in out.splitlines() if line.strip().startswith("1402")]
+    assert titles == ["1402 Mehr", "1402 Aban"]
